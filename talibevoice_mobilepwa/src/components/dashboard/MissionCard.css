@@ -1,0 +1,99 @@
+ 
+.mission-card {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 1rem;
+
+  display: flex;
+  gap: 1rem;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  transition: all 0.2s ease;
+}
+
+.mission-card:hover {
+  transform: translateY(-2px);
+}
+
+.mission-card__icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--primary-light);
+  color: var(--primary);
+
+  border-radius: 14px;
+
+  flex-shrink: 0;
+}
+
+.mission-card__content {
+  flex: 1;
+}
+
+.mission-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+
+  margin-bottom: 6px;
+}
+
+.mission-card__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mission-card__location {
+  font-size: 13px;
+  color: var(--text-secondary);
+
+  margin-bottom: 10px;
+}
+
+.mission-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mission-card__time {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.mission-card__badge {
+  font-size: 11px;
+  font-weight: 700;
+
+  padding: 4px 10px;
+  border-radius: 20px;
+
+  white-space: nowrap;
+}
+
+.mission-card__badge--en_cours {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.mission-card__badge--en_attente {
+  background: #fff8e1;
+  color: #f57f17;
+}
+
+.mission-card__badge--terminee {
+  background: #eceff1;
+  color: #546e7a;
+}

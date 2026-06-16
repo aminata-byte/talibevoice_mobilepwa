@@ -1,0 +1,150 @@
+.talibe-page {
+  min-height: 100vh;
+  background: #f5f6f8;
+}
+
+.page-header {
+  background: #0b8a4a;
+  color: white;
+  text-align: center;
+  padding: 18px;
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.page-content {
+  padding: 16px;
+}
+
+/* Champs */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+
+.field label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.field input,
+.field select,
+.field textarea {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 14px;
+  outline: none;
+  background: white;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: #0b8a4a;
+}
+
+/* Toggle Oui / Non */
+
+.toggle-field {
+  margin-top: 10px;
+}
+
+.toggle-field label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.toggle-container {
+  display: flex;
+  gap: 10px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  border-color: #0b8a4a;
+}
+
+.toggle-btn.active {
+  background: #0b8a4a;
+  color: white;
+  border-color: #0b8a4a;
+}
+
+/* Upload Documents */
+
+.upload-box {
+  border: 2px dashed #0b8a4a;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  background: #f8fffb;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.upload-box:hover {
+  background: #eefcf4;
+}
+
+.upload-box input {
+  width: 100%;
+}
+
+/* Bouton enregistrer */
+
+.save-btn {
+  width: 100%;
+  border: none;
+  border-radius: 30px;
+  padding: 16px;
+  margin-top: 24px;
+
+  background: #0b8a4a;
+  color: white;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.save-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+  .page-content {
+    padding: 12px;
+  }
+
+  .page-header {
+    font-size: 18px;
+  }
+
+  .toggle-container {
+    flex-direction: row;
+  }
+}

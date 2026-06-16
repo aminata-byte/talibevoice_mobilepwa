@@ -1,0 +1,18 @@
+.form-section {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.form-section__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.form-section__header h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
