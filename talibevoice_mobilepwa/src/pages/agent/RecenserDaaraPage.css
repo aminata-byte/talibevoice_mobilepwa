@@ -1,0 +1,114 @@
+.recenser-daara-page {
+  min-height: 100vh;
+  background: var(--background);
+  padding-bottom: 5rem;
+}
+
+.page-content {
+  padding: 1.25rem;
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Réutilise form-section, field, save-btn déjà définis */
+
+.daara-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.daara-row .form-section {
+  margin-bottom: 0;
+}
+
+/* Localisation */
+.daara-localisation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.daara-localisation__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.daara-map {
+  position: relative;
+  height: 160px;
+  background: linear-gradient(135deg, var(--secondary-dark), var(--primary-dark));
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.daara-map__btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.daara-map__btn:hover {
+  background: var(--primary-dark);
+}
+
+.daara-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+}
+
+/* Success */
+.daara-success {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: var(--background);
+  text-align: center;
+  padding: 2rem;
+}
+
+.daara-success h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.daara-success p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .daara-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
