@@ -1,130 +1,133 @@
 import { useState } from "react";
 import {
+  List,
+  Map,
   Search,
   SlidersHorizontal,
-  ChevronRight,
+  MapPin,
+  Users,
   Plus,
   Building2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
-import "./ListeTalibesPage.css";
+import "./ListeDaarasPage.css";
 
-const talibesData = [
+const daarasData = [
   {
     id: 1,
-    nom: "Abdou Diop",
-    initiales: "AD",
-    daara: "Daara Al Nour",
-    age: 12,
-    couleur: "#1B7D4B",
+    nom: "Daara Serigne Fallou",
+    zone: "Médina Gounass, Kaolack",
+    talibes: 35,
+    statut: "actif",
   },
   {
     id: 2,
-    nom: "Mamadou Sow",
-    initiales: "MS",
-    daara: "Daara Serigne Fallou",
-    age: 10,
-    couleur: "#2D5F8A",
+    nom: "Daara Cheikh Ahmadou",
+    zone: "Ndofane, Kaolack",
+    talibes: 28,
+    statut: "actif",
   },
   {
     id: 3,
-    nom: "Ibrahima Aw",
-    initiales: "IA",
-    daara: "Daara Hikmatoul Islam",
-    age: 14,
-    couleur: "#7B4B9E",
+    nom: "Daara Mame Cheikh Ibra",
+    zone: "Keur Socé, Kaolack",
+    talibes: 42,
+    statut: "actif",
   },
   {
     id: 4,
-    nom: "Bocar Samb",
-    initiales: "BS",
-    daara: "Daara Al Falah",
-    age: 11,
-    couleur: "#C0392B",
+    nom: "Daara Darou Salam",
+    zone: "Kolda",
+    talibes: 18,
+    statut: "inactif",
   },
   {
     id: 5,
-    nom: "Fatoumata Sy",
-    initiales: "FS",
-    daara: "Daara Mame Cheikh",
-    age: 13,
-    couleur: "#E67E22",
-  },
-  {
-    id: 6,
-    nom: "Moustapha Diagne",
-    initiales: "MD",
-    daara: "Daara Khadim Rassoul",
-    age: 9,
-    couleur: "#1B7D4B",
+    nom: "Daara Al Khadim",
+    zone: "Touba",
+    talibes: 56,
+    statut: "actif",
   },
 ];
 
-function ListeTalibesPage() {
+function ListeDaarasPage() {
   const navigate = useNavigate();
+  const [vue, setVue] = useState("liste");
   const [recherche, setRecherche] = useState("");
 
-  const talibsFiltres = talibesData.filter((t) =>
-    t.nom.toLowerCase().includes(recherche.toLowerCase()),
+  const daarasFiltres = daarasData.filter((d) =>
+    d.nom.toLowerCase().includes(recherche.toLowerCase()),
   );
 
   return (
-    <div className="talibes-page">
-      <TopBar title="Talibés" showBack={false} titleOnly={true} />
+    <div className="daaras-page">
+      <TopBar title="Liste des daaras" showBack={false} titleOnly={true} />
 
-      <div className="talibes-content">
+      <div className="daaras-content">
+        {/* Toggle */}
+        <div className="daaras-toggle">
+          <button
+            className={`daaras-toggle__btn ${vue === "liste" ? "active" : ""}`}
+            onClick={() => setVue("liste")}
+          >
+            <List size={16} />
+            Liste
+          </button>
+          <button
+            className={`daaras-toggle__btn ${vue === "carte" ? "active" : ""}`}
+            onClick={() => setVue("carte")}
+          >
+            <Map size={16} />
+            Carte
+          </button>
+        </div>
+
         {/* Recherche */}
-        <div className="talibes-search">
-          <div className="talibes-search__input">
+        <div className="daaras-search">
+          <div className="daaras-search__input">
             <Search size={16} />
             <input
               type="text"
-              placeholder="Rechercher un talibé..."
+              placeholder="Rechercher un daara, une zone..."
               value={recherche}
               onChange={(e) => setRecherche(e.target.value)}
             />
           </div>
-          <button className="talibes-search__filter">
+          <button className="daaras-search__filter">
             <SlidersHorizontal size={18} />
           </button>
         </div>
 
-        {/* Compteur */}
-        <div className="talibes-meta">
-          <p>
-            Total : <strong>{talibsFiltres.length} talibés</strong>
-          </p>
-          <p className="talibes-sort">
-            Trier par : <span>Plus récent</span>
-          </p>
-        </div>
-
         {/* Liste */}
-        <div className="talibes-list">
-          {talibsFiltres.map((talib) => (
+        <div className="daaras-list">
+          {daarasFiltres.map((daara) => (
             <div
-              key={talib.id}
-              className="talib-card"
-              onClick={() => navigate(`/talibes/${talib.id}`)}
+              key={daara.id}
+              className="daara-card"
+              onClick={() => navigate(`/daaras/${daara.id}/besoins`)}
             >
-              <div
-                className="talib-card__avatar"
-                style={{ backgroundColor: talib.couleur }}
-              >
-                {talib.initiales}
+              <div className="daara-card__icon">
+                <Building2 size={24} />
               </div>
-              <div className="talib-card__content">
-                <h3 className="talib-card__nom">{talib.nom}</h3>
-                <p className="talib-card__daara">
-                  <Building2 size={12} />
-                  {talib.daara}
+              <div className="daara-card__content">
+                <div className="daara-card__header">
+                  <h3 className="daara-card__nom">{daara.nom}</h3>
+                  <span
+                    className={`daara-card__badge daara-card__badge--${daara.statut}`}
+                  >
+                    {daara.statut === "actif" ? "Actif" : "Inactif"}
+                  </span>
+                </div>
+                <p className="daara-card__zone">
+                  <MapPin size={12} />
+                  {daara.zone}
                 </p>
-              </div>
-              <div className="talib-card__right">
-                <span className="talib-card__age">{talib.age} ans</span>
-                <ChevronRight size={16} className="talib-card__arrow" />
+                <p className="daara-card__talibes">
+                  <Users size={12} />
+                  {daara.talibes} talibés
+                </p>
               </div>
             </div>
           ))}
@@ -133,8 +136,8 @@ function ListeTalibesPage() {
 
       {/* FAB */}
       <button
-        className="talibes-fab"
-        onClick={() => navigate("/recenser-talibe")}
+        className="daaras-fab"
+        onClick={() => navigate("/recenser-daara")}
       >
         <Plus size={24} />
       </button>
@@ -144,4 +147,4 @@ function ListeTalibesPage() {
   );
 }
 
-export default ListeTalibesPage;
+export default ListeDaarasPage;
