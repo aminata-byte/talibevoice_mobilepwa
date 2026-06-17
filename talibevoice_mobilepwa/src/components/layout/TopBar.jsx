@@ -36,7 +36,9 @@ function TopBar({ title, showBack = false, action = null }) {
           <Bell size={20} />
           <span className="topbar__notif-badge">3</span>
         </button>
-        <div className="topbar__avatar">{agent?.name?.charAt(0) || "A"}</div>
+        <button className="topbar__avatar" onClick={() => navigate("/profil")}>
+          {agent?.name?.charAt(0) || "A"}
+        </button>
       </div>
     </div>
   );

@@ -99,3 +99,11 @@
   align-items: center;
   justify-content: center;
 }
+.topbar__avatar {
+  border: none;
+  cursor: pointer;
+}
+.topbar__avatar {
+  position: relative;
+  z-index: 10;
+}
