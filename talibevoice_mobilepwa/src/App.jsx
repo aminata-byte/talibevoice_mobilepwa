@@ -128,6 +128,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/talibes/:id/modifier"
+          element={
+            <ProtectedRoute>
+              <RecenserTalibePage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
