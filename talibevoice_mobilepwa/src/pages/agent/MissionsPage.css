@@ -1,0 +1,151 @@
+.missions-page {
+  min-height: 100vh;
+  background: var(--background);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Content */
+.missions-content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-bottom: 5rem;
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Tabs */
+.missions-tabs {
+  display: flex;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  gap: 4px;
+}
+
+.missions-tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.missions-tab.active {
+  background: var(--primary);
+  color: var(--white);
+}
+
+/* Liste */
+.missions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.missions-empty {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 2rem 0;
+}
+
+/* Card */
+.mission-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mission-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mission-card__titre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.mission-card__description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.mission-card__dates {
+  font-size: 12px;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mission-card__btn {
+  width: 100%;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.mission-card__btn:hover {
+  background: var(--primary-dark);
+}
+
+.mission-card__btn--accept {
+  background: var(--accent);
+  color: var(--secondary-dark);
+}
+
+.mission-card__btn--accept:hover {
+  background: var(--accent-dark);
+}
+
+/* Badges */
+.mission-card__badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mission-card__badge--cours {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.mission-card__badge--attente {
+  background: #FFF8E1;
+  color: #F57F17;
+}
+
+.mission-card__badge--cloturee {
+  background: var(--secondary-light);
+  color: var(--secondary-medium);
+}
