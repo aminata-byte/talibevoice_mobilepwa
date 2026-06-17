@@ -11,6 +11,7 @@ import BesoinsDaaraPage from "./pages/agent/BesoinsDaaraPage";
 import RedigerRapportPage from "./pages/agent/RedigerRapportPage";
 import NotificationsPage from "./pages/agent/NotificationsPage";
 import { useAgentAuth } from "./context/AgentAuthContext";
+import ProfilAgentPage from "./pages/agent/ProfilAgentPage";
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAgentAuth();
@@ -134,6 +135,15 @@ function App() {
           element={
             <ProtectedRoute>
               <RecenserTalibePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profil"
+          element={
+            <ProtectedRoute>
+              <ProfilAgentPage />
             </ProtectedRoute>
           }
         />
