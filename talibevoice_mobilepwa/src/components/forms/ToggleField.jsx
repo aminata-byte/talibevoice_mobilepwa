@@ -1,25 +1,21 @@
 import { useState } from "react";
 
-function ToggleField({ label }) {
-  const [isMajor, setIsMajor] = useState(false);
-
+function ToggleField({ label, value, onChange }) {
   return (
     <div className="toggle-field">
       <label>{label}</label>
-
       <div className="toggle-container">
         <button
           type="button"
-          className={!isMajor ? "toggle-btn active" : "toggle-btn"}
-          onClick={() => setIsMajor(false)}
+          className={!value ? "toggle-btn active" : "toggle-btn"}
+          onClick={() => onChange(false)}
         >
           Non
         </button>
-
         <button
           type="button"
-          className={isMajor ? "toggle-btn active" : "toggle-btn"}
-          onClick={() => setIsMajor(true)}
+          className={value ? "toggle-btn active" : "toggle-btn"}
+          onClick={() => onChange(true)}
         >
           Oui
         </button>
