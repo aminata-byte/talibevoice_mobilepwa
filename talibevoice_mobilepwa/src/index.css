@@ -60,3 +60,15 @@ select {
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
