@@ -12,6 +12,7 @@ import RedigerRapportPage from "./pages/agent/RedigerRapportPage";
 import NotificationsPage from "./pages/agent/NotificationsPage";
 import { useAgentAuth } from "./context/AgentAuthContext";
 import ProfilAgentPage from "./pages/agent/ProfilAgentPage";
+import MissionDetailPage from "./pages/agent/MissionDetailPage";
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAgentAuth();
@@ -144,6 +145,15 @@ function App() {
           element={
             <ProtectedRoute>
               <ProfilAgentPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/missions/:id"
+          element={
+            <ProtectedRoute>
+              <MissionDetailPage />
             </ProtectedRoute>
           }
         />

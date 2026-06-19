@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Calendar } from "lucide-react";
+import { Calendar, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
 import "./MissionsPage.css";
@@ -49,11 +50,16 @@ const missionsData = [
 
 function MissionsPage() {
   const [tab, setTab] = useState("en_cours");
+  const navigate = useNavigate();
 
   const missionsFiltrees = missionsData.filter((m) => m.statut === tab);
 
   const handleCloturer = (id) => {
     alert(`Mission #${id} clôturée avec succès.`);
+  };
+
+  const handleDetails = (id) => {
+    navigate(`/missions/${id}`);
   };
 
   return (
@@ -117,22 +123,34 @@ function MissionsPage() {
                   <Calendar size={13} />
                   {mission.dates}
                 </p>
-                {mission.statut === "en_cours" && (
+
+                {/* Actions */}
+                <div className="mission-card__actions">
                   <button
-                    className="mission-card__btn"
-                    onClick={() => handleCloturer(mission.id)}
+                    className="mission-card__btn mission-card__btn--details"
+                    onClick={() => handleDetails(mission.id)}
                   >
-                    Clôturer la mission
+                    <Eye size={15} />
+                    Détails
                   </button>
-                )}
-                {mission.statut === "en_attente" && (
-                  <button
-                    className="mission-card__btn mission-card__btn--accept"
-                    onClick={() => handleCloturer(mission.id)}
-                  >
-                    Accepter la mission
-                  </button>
-                )}
+
+                  {mission.statut === "en_cours" && (
+                    <button
+                      className="mission-card__btn mission-card__btn--cloturer"
+                      onClick={() => handleCloturer(mission.id)}
+                    >
+                      Clôturer
+                    </button>
+                  )}
+                  {mission.statut === "en_attente" && (
+                    <button
+                      className="mission-card__btn mission-card__btn--accept"
+                      onClick={() => handleCloturer(mission.id)}
+                    >
+                      Accepter
+                    </button>
+                  )}
+                </div>
               </div>
             ))
           )}

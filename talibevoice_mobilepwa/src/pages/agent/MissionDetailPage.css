@@ -1,0 +1,141 @@
+.mdetail-page {
+  min-height: 100vh;
+  background: var(--background);
+  padding-bottom: 5rem;
+}
+
+.mdetail-content {
+  padding: 1.25rem;
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Header */
+.mdetail-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mdetail-titre {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+/* Badge */
+.mdetail-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.mdetail-badge--cours {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.mdetail-badge--attente {
+  background: #FFF8E1;
+  color: #F57F17;
+}
+
+.mdetail-badge--cloturee {
+  background: var(--secondary-light);
+  color: var(--secondary-medium);
+}
+
+/* Infos */
+.mdetail-infos {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.mdetail-info-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--primary);
+}
+
+.mdetail-info-item:last-child {
+  border-bottom: none;
+}
+
+.mdetail-info-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.mdetail-info-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Description */
+.mdetail-description {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+}
+
+.mdetail-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.mdetail-description p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* Action */
+.mdetail-action-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: var(--radius-xl);
+  padding: 13px;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.mdetail-action-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* Error */
+.mdetail-error {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}

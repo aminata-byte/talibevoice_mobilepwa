@@ -98,21 +98,44 @@
   gap: 6px;
 }
 
-.mission-card__btn {
-  width: 100%;
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 12px;
-  background: var(--primary);
-  color: var(--white);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
+/* Actions */
+.mission-card__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
   margin-top: 0.5rem;
-  transition: background-color 0.2s;
 }
 
-.mission-card__btn:hover {
+.mission-card__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mission-card__btn--details {
+  background: var(--white);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.mission-card__btn--details:hover {
+  background: var(--primary-light);
+}
+
+.mission-card__btn--cloturer {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.mission-card__btn--cloturer:hover {
   background: var(--primary-dark);
 }
 

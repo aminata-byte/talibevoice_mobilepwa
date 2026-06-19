@@ -61,26 +61,24 @@ function RecenserDaaraPage() {
       <TopBar title="Recenser un daara" showBack={true} />
 
       <div className="page-content">
-        <FormSection icon={<Building2 size={18} />} title="">
+        {/* Informations générales */}
+        <FormSection
+          icon={<Building2 size={18} />}
+          title="Informations générales"
+        >
           <TextField
             label="Nom du daara"
             placeholder="Ex : Daara Serigne Fallou"
             value={form.nom}
             onChange={(e) => handleChange("nom", e.target.value)}
           />
-        </FormSection>
-
-        <FormSection icon={<MapPin size={18} />} title="">
           <TextField
             label="Adresse"
             placeholder="Ex : Médina Gounass, Kaolack"
             value={form.adresse}
             onChange={(e) => handleChange("adresse", e.target.value)}
           />
-        </FormSection>
-
-        <div className="daara-row">
-          <FormSection icon={<Building2 size={18} />} title="">
+          <div className="daara-row">
             <TextField
               label="Capacité d'accueil"
               placeholder="Ex : 50"
@@ -88,8 +86,6 @@ function RecenserDaaraPage() {
               value={form.capacite_accueil}
               onChange={(e) => handleChange("capacite_accueil", e.target.value)}
             />
-          </FormSection>
-          <FormSection icon={<Users size={18} />} title="">
             <TextField
               label="Nombre de talibés"
               placeholder="Ex : 35"
@@ -97,19 +93,17 @@ function RecenserDaaraPage() {
               value={form.nombre_talibes}
               onChange={(e) => handleChange("nombre_talibes", e.target.value)}
             />
-          </FormSection>
-        </div>
+          </div>
+        </FormSection>
 
-        <FormSection icon={<User size={18} />} title="">
+        {/* Responsable */}
+        <FormSection icon={<User size={18} />} title="Responsable">
           <TextField
             label="Nom du responsable"
             placeholder="Ex : Serigne Abdou Fall"
             value={form.nom_responsable}
             onChange={(e) => handleChange("nom_responsable", e.target.value)}
           />
-        </FormSection>
-
-        <FormSection icon={<Phone size={18} />} title="">
           <TextField
             label="Téléphone du responsable"
             placeholder="Ex : 77 123 45 67"
@@ -121,34 +115,29 @@ function RecenserDaaraPage() {
         </FormSection>
 
         {/* Localisation */}
-        <div className="daara-localisation">
-          <h3 className="daara-localisation__title">Localisation</h3>
+        <FormSection icon={<MapPinned size={18} />} title="Localisation">
           <div className="daara-map">
             <button className="daara-map__btn">
               <MapPinned size={20} />
             </button>
           </div>
           <div className="daara-row">
-            <FormSection icon={<MapPin size={16} />} title="">
-              <TextField
-                label="Latitude"
-                value={form.latitude}
-                onChange={(e) => handleChange("latitude", e.target.value)}
-              />
-            </FormSection>
-            <FormSection icon={<MapPin size={16} />} title="">
-              <TextField
-                label="Longitude"
-                value={form.longitude}
-                onChange={(e) => handleChange("longitude", e.target.value)}
-              />
-            </FormSection>
+            <TextField
+              label="Latitude"
+              value={form.latitude}
+              onChange={(e) => handleChange("latitude", e.target.value)}
+            />
+            <TextField
+              label="Longitude"
+              value={form.longitude}
+              onChange={(e) => handleChange("longitude", e.target.value)}
+            />
           </div>
           <div className="daara-info">
             <Info size={16} />
             <span>La localisation est détectée automatiquement.</span>
           </div>
-        </div>
+        </FormSection>
 
         <button className="save-btn" onClick={handleSubmit}>
           <Save size={18} />
