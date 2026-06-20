@@ -7,9 +7,10 @@ import FormSection from "../../components/forms/FormSection";
 import TextField from "../../components/forms/TextField";
 import SelectField from "../../components/forms/SelectField";
 import ToggleField from "../../components/forms/ToggleField";
+import agentService from "../../services/agentService";
 import "./RecenserTalibePage.css";
 
-// Données mock — à remplacer par l'API
+// Données mock — utilisées uniquement en mode édition pour l'instant
 const talibesData = [
   {
     id: 1,
@@ -70,16 +71,36 @@ function RecenserTalibePage() {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.nom || !form.prenom) {
       alert("Veuillez remplir au moins le nom et le prénom.");
       return;
     }
-    setSuccess(true);
-    setTimeout(() => {
-      setSuccess(false);
-      navigate(isEditMode ? `/talibes/${id}` : "/talibes");
-    }, 2000);
+
+    try {
+      if (isEditMode) {
+        // Mode édition — à connecter plus tard avec une route update
+        setSuccess(true);
+      } else {
+        await agentService.createTalibe({
+          daara_id: 2, // temporaire — à remplacer par une vraie sélection de daara
+          nom: form.nom,
+          prenom: form.prenom,
+          date_naissance: form.date_naissance,
+          lieu_naissance: form.lieu_naissance,
+          niveau_etude: form.niveau_etude,
+          est_majeur: form.est_majeur,
+        });
+        setSuccess(true);
+      }
+
+      setTimeout(() => {
+        setSuccess(false);
+        navigate(isEditMode ? `/talibes/${id}` : "/talibes");
+      }, 2000);
+    } catch (err) {
+      alert(err.response?.data?.message || "Erreur lors de l'enregistrement.");
+    }
   };
 
   if (success) {

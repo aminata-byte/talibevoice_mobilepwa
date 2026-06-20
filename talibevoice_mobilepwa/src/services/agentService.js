@@ -1,0 +1,66 @@
+import api from "./api";
+
+const agentService = {
+  // Talibés
+  createTalibe: async (data) => {
+    const response = await api.post("/agent/talibes", data);
+    return response.data;
+  },
+
+  getTalibes: async () => {
+    const response = await api.get("/agent/talibes");
+    return response.data;
+  },
+
+  // Daaras
+  createDaara: async (data) => {
+    const response = await api.post("/agent/daaras", data);
+    return response.data;
+  },
+
+  getDaaras: async () => {
+    const response = await api.get("/agent/daaras");
+    return response.data;
+  },
+
+  // Besoins
+  createBesoin: async (data) => {
+    const response = await api.post("/agent/besoins", data);
+    return response.data;
+  },
+
+  // Missions
+  getMissions: async () => {
+    const response = await api.get("/agent/missions");
+    return response.data;
+  },
+
+  accepterMission: async (id) => {
+    const response = await api.post(`/agent/missions/${id}/accepter`);
+    return response.data;
+  },
+
+  cloturerMission: async (id) => {
+    const response = await api.post(`/agent/missions/${id}/cloturer`);
+    return response.data;
+  },
+
+  // Rapports
+  createRapport: async (data) => {
+    const response = await api.post("/agent/rapports", data);
+    return response.data;
+  },
+
+  getRapports: async () => {
+    const response = await api.get("/agent/rapports");
+    return response.data;
+  },
+
+  // Notifications
+  getNotifications: async () => {
+    const response = await api.get("/agent/notifications");
+    return response.data;
+  },
+};
+
+export default agentService;
