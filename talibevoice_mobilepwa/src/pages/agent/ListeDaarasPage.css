@@ -221,3 +221,10 @@
   background: var(--primary-dark);
   transform: scale(1.05);
 }
+
+.daaras-empty {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 2rem 0;
+}

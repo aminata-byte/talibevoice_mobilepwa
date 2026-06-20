@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   List,
   Map,
@@ -12,52 +12,36 @@ import {
 import { useNavigate } from "react-router-dom";
 import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
+import agentService from "../../services/agentService";
 import "./ListeDaarasPage.css";
-
-const daarasData = [
-  {
-    id: 1,
-    nom: "Daara Serigne Fallou",
-    zone: "Médina Gounass, Kaolack",
-    talibes: 35,
-    statut: "actif",
-  },
-  {
-    id: 2,
-    nom: "Daara Cheikh Ahmadou",
-    zone: "Ndofane, Kaolack",
-    talibes: 28,
-    statut: "actif",
-  },
-  {
-    id: 3,
-    nom: "Daara Mame Cheikh Ibra",
-    zone: "Keur Socé, Kaolack",
-    talibes: 42,
-    statut: "actif",
-  },
-  {
-    id: 4,
-    nom: "Daara Darou Salam",
-    zone: "Kolda",
-    talibes: 18,
-    statut: "inactif",
-  },
-  {
-    id: 5,
-    nom: "Daara Al Khadim",
-    zone: "Touba",
-    talibes: 56,
-    statut: "actif",
-  },
-];
 
 function ListeDaarasPage() {
   const navigate = useNavigate();
   const [vue, setVue] = useState("liste");
   const [recherche, setRecherche] = useState("");
+  const [daaras, setDaaras] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const daarasFiltres = daarasData.filter((d) =>
+  useEffect(() => {
+    fetchDaaras();
+  }, []);
+
+  const fetchDaaras = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await agentService.getDaaras();
+      setDaaras(data);
+    } catch (err) {
+      setError("Erreur lors du chargement des daaras.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const daarasFiltres = daaras.filter((d) =>
     d.nom.toLowerCase().includes(recherche.toLowerCase()),
   );
 
@@ -100,6 +84,13 @@ function ListeDaarasPage() {
           </button>
         </div>
 
+        {/* Chargement / Erreur */}
+        {loading && <p className="daaras-empty">Chargement des daaras...</p>}
+        {error && <p className="daaras-empty">{error}</p>}
+        {!loading && !error && daarasFiltres.length === 0 && (
+          <p className="daaras-empty">Aucun daara recensé pour le moment.</p>
+        )}
+
         {/* Liste */}
         <div className="daaras-list">
           {daarasFiltres.map((daara) => (
@@ -115,18 +106,22 @@ function ListeDaarasPage() {
                 <div className="daara-card__header">
                   <h3 className="daara-card__nom">{daara.nom}</h3>
                   <span
-                    className={`daara-card__badge daara-card__badge--${daara.statut}`}
+                    className={`daara-card__badge daara-card__badge--${daara.statut === "actif" ? "actif" : "inactif"}`}
                   >
-                    {daara.statut === "actif" ? "Actif" : "Inactif"}
+                    {daara.statut === "actif"
+                      ? "Actif"
+                      : daara.statut === "en_attente"
+                        ? "En attente"
+                        : "Inactif"}
                   </span>
                 </div>
                 <p className="daara-card__zone">
                   <MapPin size={12} />
-                  {daara.zone}
+                  {daara.commune || daara.region || daara.adresse}
                 </p>
                 <p className="daara-card__talibes">
                   <Users size={12} />
-                  {daara.talibes} talibés
+                  {daara.talibes_count ?? daara.nombre_talibes} talibés
                 </p>
               </div>
             </div>
