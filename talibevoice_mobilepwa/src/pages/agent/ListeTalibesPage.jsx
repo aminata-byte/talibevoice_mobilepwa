@@ -1,67 +1,65 @@
-import { useState } from "react";
-import { Search, SlidersHorizontal, ChevronRight, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Search,
+  SlidersHorizontal,
+  ChevronRight,
+  Plus,
+  Building2,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
+import agentService from "../../services/agentService";
 import "./ListeTalibesPage.css";
 
-const talibesData = [
-  {
-    id: 1,
-    nom: "Abdou Diop",
-    initiales: "AD",
-    daara: "Daara Al Nour",
-    age: 12,
-    couleur: "#1B7D4B",
-  },
-  {
-    id: 2,
-    nom: "Mamadou Sow",
-    initiales: "MS",
-    daara: "Daara Serigne Fallou",
-    age: 10,
-    couleur: "#2D5F8A",
-  },
-  {
-    id: 3,
-    nom: "Ibrahima Aw",
-    initiales: "IA",
-    daara: "Daara Hikmatoul Islam",
-    age: 14,
-    couleur: "#7B4B9E",
-  },
-  {
-    id: 4,
-    nom: "Bocar Samb",
-    initiales: "BS",
-    daara: "Daara Al Falah",
-    age: 11,
-    couleur: "#C0392B",
-  },
-  {
-    id: 5,
-    nom: "Fatoumata Sy",
-    initiales: "FS",
-    daara: "Daara Mame Cheikh",
-    age: 13,
-    couleur: "#E67E22",
-  },
-  {
-    id: 6,
-    nom: "Moustapha Diagne",
-    initiales: "MD",
-    daara: "Daara Khadim Rassoul",
-    age: 9,
-    couleur: "#1B7D4B",
-  },
-];
+const couleurs = ["#1B7D4B", "#2D5F8A", "#7B4B9E", "#C0392B", "#E67E22"];
+
+function calculerAge(dateNaissance) {
+  if (!dateNaissance) return "—";
+  const naissance = new Date(dateNaissance);
+  const aujourdHui = new Date();
+  let age = aujourdHui.getFullYear() - naissance.getFullYear();
+  const moisDiff = aujourdHui.getMonth() - naissance.getMonth();
+  if (
+    moisDiff < 0 ||
+    (moisDiff === 0 && aujourdHui.getDate() < naissance.getDate())
+  ) {
+    age--;
+  }
+  return age;
+}
+
+function getInitiales(nom, prenom) {
+  return `${prenom?.charAt(0) || ""}${nom?.charAt(0) || ""}`.toUpperCase();
+}
 
 function ListeTalibesPage() {
   const navigate = useNavigate();
   const [recherche, setRecherche] = useState("");
+  const [talibes, setTalibes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const talibsFiltres = talibesData.filter((t) =>
-    t.nom.toLowerCase().includes(recherche.toLowerCase()),
+  useEffect(() => {
+    fetchTalibes();
+  }, []);
+
+  const fetchTalibes = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await agentService.getTalibes();
+      setTalibes(data);
+    } catch (err) {
+      setError("Erreur lors du chargement des talibés.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const talibsFiltres = talibes.filter((t) =>
+    `${t.prenom} ${t.nom}`.toLowerCase().includes(recherche.toLowerCase()),
   );
 
   return (
@@ -95,9 +93,16 @@ function ListeTalibesPage() {
           </p>
         </div>
 
+        {/* Chargement / Erreur */}
+        {loading && <p className="talibes-empty">Chargement des talibés...</p>}
+        {error && <p className="talibes-empty">{error}</p>}
+        {!loading && !error && talibsFiltres.length === 0 && (
+          <p className="talibes-empty">Aucun talibé recensé pour le moment.</p>
+        )}
+
         {/* Liste */}
         <div className="talibes-list">
-          {talibsFiltres.map((talib) => (
+          {talibsFiltres.map((talib, index) => (
             <div
               key={talib.id}
               className="talib-card"
@@ -105,16 +110,23 @@ function ListeTalibesPage() {
             >
               <div
                 className="talib-card__avatar"
-                style={{ backgroundColor: talib.couleur }}
+                style={{ backgroundColor: couleurs[index % couleurs.length] }}
               >
-                {talib.initiales}
+                {getInitiales(talib.nom, talib.prenom)}
               </div>
               <div className="talib-card__content">
-                <h3 className="talib-card__nom">{talib.nom}</h3>
-                <p className="talib-card__daara">{talib.daara}</p>
+                <h3 className="talib-card__nom">
+                  {talib.prenom} {talib.nom}
+                </h3>
+                <p className="talib-card__daara">
+                  <Building2 size={12} />
+                  {talib.daara?.nom || "Daara non renseigné"}
+                </p>
               </div>
               <div className="talib-card__right">
-                <span className="talib-card__age">{talib.age} ans</span>
+                <span className="talib-card__age">
+                  {calculerAge(talib.date_naissance)} ans
+                </span>
                 <ChevronRight size={16} className="talib-card__arrow" />
               </div>
             </div>
