@@ -14,6 +14,7 @@ import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
 import FormSection from "../../components/forms/FormSection";
 import TextField from "../../components/forms/TextField";
+import agentService from "../../services/agentService";
 import "./RecenserDaaraPage.css";
 
 function RecenserDaaraPage() {
@@ -34,16 +35,32 @@ function RecenserDaaraPage() {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.nom || !form.adresse || !form.nom_responsable) {
       alert("Veuillez remplir au moins le nom, l'adresse et le responsable.");
       return;
     }
-    setSuccess(true);
-    setTimeout(() => {
-      setSuccess(false);
-      navigate("/daaras");
-    }, 2000);
+
+    try {
+      await agentService.createDaara({
+        nom: form.nom,
+        adresse: form.adresse,
+        capacite_accueil: form.capacite_accueil || 0,
+        nombre_talibes: form.nombre_talibes || 0,
+        nom_responsable: form.nom_responsable,
+        telephone_responsable: form.telephone_responsable,
+        latitude: form.latitude,
+        longitude: form.longitude,
+      });
+
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        navigate("/daaras");
+      }, 2000);
+    } catch (err) {
+      alert(err.response?.data?.message || "Erreur lors de l'enregistrement.");
+    }
   };
 
   if (success) {
