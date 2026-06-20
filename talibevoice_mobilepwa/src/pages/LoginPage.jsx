@@ -21,24 +21,14 @@ function LoginPage() {
     setLoading(true);
     setError(null);
 
-    // Simulation temporaire en attendant le backend
-    if (email === "moussa@talibevoice.sn" && password === "password") {
-      localStorage.setItem("agent_token", "temp_agent_token");
-      localStorage.setItem(
-        "agent",
-        JSON.stringify({
-          id: 2,
-          name: "Moussa Diallo",
-          email: "moussa@talibevoice.sn",
-          role: "agent",
-          zone_affectation: "Dakar",
-          matricule: "AGT001",
-        }),
-      );
-      window.location.href = "/dashboard";
+    const result = await login(email, password);
+
+    if (result.success) {
+      navigate("/dashboard");
     } else {
-      setError("Identifiants incorrects.");
+      setError(result.message);
     }
+
     setLoading(false);
   };
 
