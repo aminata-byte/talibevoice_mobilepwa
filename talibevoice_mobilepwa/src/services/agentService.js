@@ -61,6 +61,16 @@ const agentService = {
     const response = await api.get("/agent/notifications");
     return response.data;
   },
+
+  getTalibe: async (id) => {
+    const response = await api.get(`/agent/talibes/${id}`);
+    return response.data;
+  },
+
+  updateTalibe: async (id, data) => {
+    const response = await api.put(`/agent/talibes/${id}`, data);
+    return response.data;
+  },
 };
 
 export default agentService;

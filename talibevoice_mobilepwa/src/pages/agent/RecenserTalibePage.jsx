@@ -10,36 +10,13 @@ import ToggleField from "../../components/forms/ToggleField";
 import agentService from "../../services/agentService";
 import "./RecenserTalibePage.css";
 
-// Données mock — utilisées uniquement en mode édition pour l'instant
-const talibesData = [
-  {
-    id: 1,
-    nom: "Diop",
-    prenom: "Abdou",
-    date_naissance: "2013-03-15",
-    lieu_naissance: "Médina Gounass, Kolda",
-    daara: "Daara Al Nour",
-    niveau_etude: "Coran - Niveau 2",
-    est_majeur: false,
-  },
-  {
-    id: 2,
-    nom: "Sow",
-    prenom: "Mamadou",
-    date_naissance: "2015-06-20",
-    lieu_naissance: "Dakar Plateau",
-    daara: "Daara Serigne Fallou",
-    niveau_etude: "Coran - Niveau 1",
-    est_majeur: false,
-  },
-];
-
 function RecenserTalibePage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = !!id;
 
   const [success, setSuccess] = useState(false);
+  const [loadingData, setLoadingData] = useState(isEditMode);
   const [form, setForm] = useState({
     nom: "",
     prenom: "",
@@ -48,24 +25,40 @@ function RecenserTalibePage() {
     daara: "",
     niveau_etude: "",
     est_majeur: false,
+    a_etat_civil: false,
   });
 
   useEffect(() => {
     if (isEditMode) {
-      const talib = talibesData.find((t) => t.id === parseInt(id));
+      fetchTalib();
+    }
+  }, [id, isEditMode]);
+
+  const fetchTalib = async () => {
+    setLoadingData(true);
+    try {
+      const data = await agentService.getTalibes();
+      const talib = data.find((t) => t.id === parseInt(id));
       if (talib) {
         setForm({
           nom: talib.nom,
           prenom: talib.prenom,
-          date_naissance: talib.date_naissance,
-          lieu_naissance: talib.lieu_naissance,
-          daara: talib.daara,
-          niveau_etude: talib.niveau_etude,
+          date_naissance: talib.date_naissance
+            ? talib.date_naissance.split("T")[0]
+            : "",
+          lieu_naissance: talib.lieu_naissance || "",
+          daara: talib.daara?.nom || "",
+          niveau_etude: talib.niveau_etude || "",
           est_majeur: talib.est_majeur,
+          a_etat_civil: talib.a_etat_civil,
         });
       }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingData(false);
     }
-  }, [id, isEditMode]);
+  };
 
   const handleChange = (field, value) => {
     setForm({ ...form, [field]: value });
@@ -79,8 +72,15 @@ function RecenserTalibePage() {
 
     try {
       if (isEditMode) {
-        // Mode édition — à connecter plus tard avec une route update
-        setSuccess(true);
+        await agentService.updateTalibe(id, {
+          nom: form.nom,
+          prenom: form.prenom,
+          date_naissance: form.date_naissance,
+          lieu_naissance: form.lieu_naissance,
+          niveau_etude: form.niveau_etude,
+          est_majeur: form.est_majeur,
+          a_etat_civil: form.a_etat_civil,
+        });
       } else {
         await agentService.createTalibe({
           daara_id: 2, // temporaire — à remplacer par une vraie sélection de daara
@@ -90,10 +90,11 @@ function RecenserTalibePage() {
           lieu_naissance: form.lieu_naissance,
           niveau_etude: form.niveau_etude,
           est_majeur: form.est_majeur,
+          a_etat_civil: form.a_etat_civil,
         });
-        setSuccess(true);
       }
 
+      setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
         navigate(isEditMode ? `/talibes/${id}` : "/talibes");
@@ -102,6 +103,14 @@ function RecenserTalibePage() {
       alert(err.response?.data?.message || "Erreur lors de l'enregistrement.");
     }
   };
+
+  if (loadingData) {
+    return (
+      <div className="talibe-success">
+        <p>Chargement...</p>
+      </div>
+    );
+  }
 
   if (success) {
     return (
@@ -182,6 +191,11 @@ function RecenserTalibePage() {
             label="Est majeur ?"
             value={form.est_majeur}
             onChange={(val) => handleChange("est_majeur", val)}
+          />
+          <ToggleField
+            label="A un état civil ?"
+            value={form.a_etat_civil}
+            onChange={(val) => handleChange("a_etat_civil", val)}
           />
         </FormSection>
 
