@@ -49,7 +49,7 @@ function ListeTalibesPage() {
     setError(null);
     try {
       const data = await agentService.getTalibes();
-      setTalibes(data);
+      setTalibes(Array.isArray(data) ? data : []);
     } catch (err) {
       setError("Erreur lors du chargement des talibés.");
       console.error(err);

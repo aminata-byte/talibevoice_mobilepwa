@@ -33,8 +33,7 @@ function calculerAge(dateNaissance) {
 
 function formaterDate(dateString) {
   if (!dateString) return "Non renseignée";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("fr-FR", {
+  return new Date(dateString).toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -60,13 +59,8 @@ function FicheTalibePage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await agentService.getTalibes();
-      const found = data.find((t) => t.id === parseInt(id));
-      if (found) {
-        setTalib(found);
-      } else {
-        setError("Talibé introuvable.");
-      }
+      const data = await agentService.getTalibe(id);
+      setTalib(data);
     } catch (err) {
       setError("Erreur lors du chargement de la fiche.");
       console.error(err);
@@ -125,16 +119,14 @@ function FicheTalibePage() {
       <TopBar title={`${talib.prenom} ${talib.nom}`} showBack={true} />
 
       <div className="fiche-content">
-        {/* Badge statut */}
         <div className="fiche-statut">
           <span
             className={`fiche-statut__badge fiche-statut__badge--${talib.statut}`}
           >
-            {talib.statut.toUpperCase()}
+            {talib.statut?.toUpperCase()}
           </span>
         </div>
 
-        {/* Avatar */}
         <div className="fiche-avatar-container">
           <div
             className="fiche-avatar"
@@ -144,7 +136,6 @@ function FicheTalibePage() {
           </div>
         </div>
 
-        {/* Age + Sexe */}
         <div className="fiche-quick">
           <div className="fiche-quick__item">
             <Calendar size={18} color="var(--primary)" />
@@ -167,7 +158,6 @@ function FicheTalibePage() {
           </div>
         </div>
 
-        {/* Informations détaillées */}
         <div className="fiche-infos">
           {infos.map((info, index) => (
             <div key={index} className="fiche-info-item">
@@ -185,7 +175,6 @@ function FicheTalibePage() {
         </div>
       </div>
 
-      {/* Bouton modifier */}
       <div className="fiche-footer">
         <button
           className="fiche-edit-btn"

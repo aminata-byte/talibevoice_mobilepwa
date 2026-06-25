@@ -32,7 +32,7 @@ function ListeDaarasPage() {
     setError(null);
     try {
       const data = await agentService.getDaaras();
-      setDaaras(data);
+      setDaaras(Array.isArray(data) ? data : []);
     } catch (err) {
       setError("Erreur lors du chargement des daaras.");
       console.error(err);
@@ -121,7 +121,7 @@ function ListeDaarasPage() {
                 </p>
                 <p className="daara-card__talibes">
                   <Users size={12} />
-                  {daara.talibes_count ?? daara.nombre_talibes} talibés
+                  {daara.talibes_count ?? daara.nombre_talibes ?? 0} talibés
                 </p>
               </div>
             </div>
