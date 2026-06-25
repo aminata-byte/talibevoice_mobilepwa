@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   MapPin,
@@ -8,91 +8,89 @@ import {
   Wheat,
   Pill,
   BookOpen,
-  MoreHorizontal,
+  Shirt,
+  Building,
+  Package,
   ChevronRight,
   Shield,
+  CheckCircle2,
 } from "lucide-react";
 import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
-import FormSection from "../../components/forms/FormSection";
 import SelectField from "../../components/forms/SelectField";
+import agentService from "../../services/agentService";
 import "./BesoinsDaaraPage.css";
-
-const daarasData = {
-  1: {
-    nom: "Daara Serigne Fallou",
-    zone: "Médina Gounass, Kaolack",
-    talibes: 35,
-    responsable: "Serigne Abdou Fall",
-  },
-  2: {
-    nom: "Daara Cheikh Ahmadou",
-    zone: "Ndofane, Kaolack",
-    talibes: 28,
-    responsable: "Serigne Modou Diop",
-  },
-};
-
-const besoinsExistants = [
-  {
-    id: 1,
-    type: "Alimentaire",
-    icon: <Wheat size={18} />,
-    titre: "Riz et huile",
-    description: "Besoin en vivres pour la cuisine",
-    priorite: "urgent",
-    date: "15 mai 2025",
-  },
-  {
-    id: 2,
-    type: "Médical",
-    icon: <Pill size={18} />,
-    titre: "Médicaments",
-    description: "Besoin en médicaments de première nécessité",
-    priorite: "normal",
-    date: "14 mai 2025",
-  },
-  {
-    id: 3,
-    type: "Éducatif",
-    icon: <BookOpen size={18} />,
-    titre: "Fournitures scolaires",
-    description: "Cahiers, stylos, ardoises",
-    priorite: "faible",
-    date: "13 mai 2025",
-  },
-  {
-    id: 4,
-    type: "Autre",
-    icon: <MoreHorizontal size={18} />,
-    titre: "Autres besoins",
-    description: "Matelas pour dortoir",
-    priorite: "normal",
-    date: "12 mai 2025",
-  },
-];
 
 function BesoinsDaaraPage() {
   const { id } = useParams();
-  const daara = daarasData[id] || daarasData[1];
-
+  const [daara, setDaara] = useState(null);
+  const [besoins, setBesoins] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [success, setSuccess] = useState(false);
   const [form, setForm] = useState({
     type: "",
     description: "",
     priorite: "urgent",
   });
 
+  useEffect(() => {
+    fetchData();
+  }, [id]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const daarasData = await agentService.getDaaras();
+      const found = daarasData.find((d) => d.id === parseInt(id));
+      setDaara(found || null);
+
+      // Charger les besoins depuis l'API publique
+      const response = await fetch(
+        `http://localhost:8000/api/daaras/${id}/besoins`,
+      );
+      const besoinsData = await response.json();
+      setBesoins(Array.isArray(besoinsData) ? besoinsData : []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleChange = (field, value) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.type || !form.description) {
       alert("Veuillez remplir le type et la description.");
       return;
     }
-    alert("Besoin ajouté avec succès !");
-    setForm({ type: "", description: "", priorite: "urgent" });
+    try {
+      const newBesoin = await agentService.createBesoin({
+        daara_id: parseInt(id),
+        type: form.type,
+        description: form.description,
+        priorite: form.priorite,
+        date_signalement: new Date().toISOString().split("T")[0],
+      });
+      setBesoins((prev) => [newBesoin, ...prev]);
+      setSuccess(true);
+      setForm({ type: "", description: "", priorite: "urgent" });
+      setTimeout(() => setSuccess(false), 2000);
+    } catch (err) {
+      alert(err.response?.data?.message || "Erreur lors de l'ajout.");
+    }
+  };
+
+  const getTypeIcon = (type) => {
+    const t = type?.toLowerCase();
+    if (t === "alimentaire") return <Wheat size={18} />;
+    if (t === "médical" || t === "medical") return <Pill size={18} />;
+    if (t === "éducatif" || t === "educatif") return <BookOpen size={18} />;
+    if (t === "infrastructure") return <Building size={18} />;
+    if (t === "vêtements" || t === "vetements") return <Shirt size={18} />;
+    return <Package size={18} />;
   };
 
   const getPrioriteBadgeClass = (priorite) => {
@@ -115,32 +113,47 @@ function BesoinsDaaraPage() {
 
       <div className="besoins-content">
         {/* Card daara */}
-        <div className="besoins-daara-card">
-          <div className="besoins-daara-card__icon">
-            <Shield size={24} />
-          </div>
-          <div className="besoins-daara-card__info">
-            <h3>{daara.nom}</h3>
-            <p className="besoins-daara-card__zone">
-              <MapPin size={12} />
-              {daara.zone}
-            </p>
-            <div className="besoins-daara-card__meta">
-              <span>
-                <Users size={12} />
-                {daara.talibes} talibés
-              </span>
-              <span>
-                <User size={12} />
-                Responsable : {daara.responsable}
-              </span>
+        {loading ? (
+          <p style={{ color: "var(--text-secondary)", padding: "1rem" }}>
+            Chargement...
+          </p>
+        ) : daara ? (
+          <div className="besoins-daara-card">
+            <div className="besoins-daara-card__icon">
+              <Shield size={24} />
+            </div>
+            <div className="besoins-daara-card__info">
+              <h3>{daara.nom}</h3>
+              <p className="besoins-daara-card__zone">
+                <MapPin size={12} /> {daara.adresse || "—"}
+              </p>
+              <div className="besoins-daara-card__meta">
+                <span>
+                  <Users size={12} /> {daara.talibes_count || 0} talibés
+                </span>
+                <span>
+                  <User size={12} /> Responsable :{" "}
+                  {daara.nom_responsable || "—"}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <p style={{ color: "var(--text-secondary)", padding: "1rem" }}>
+            Daara introuvable.
+          </p>
+        )}
 
         {/* Formulaire ajout */}
         <div className="besoins-form">
           <h2 className="besoins-form__title">Ajouter un besoin</h2>
+
+          {success && (
+            <div className="besoins-success">
+              <CheckCircle2 size={18} color="var(--primary)" />
+              <span>Besoin ajouté avec succès !</span>
+            </div>
+          )}
 
           <SelectField
             label="Type de besoin *"
@@ -174,30 +187,29 @@ function BesoinsDaaraPage() {
           <div className="field">
             <label>Priorité *</label>
             <div className="besoins-priorite">
-              <button
-                className={`besoins-priorite__btn besoins-priorite__btn--urgent ${form.priorite === "urgent" ? "active" : ""}`}
-                onClick={() => handleChange("priorite", "urgent")}
-              >
-                Urgent
-              </button>
-              <button
-                className={`besoins-priorite__btn besoins-priorite__btn--normal ${form.priorite === "normal" ? "active" : ""}`}
-                onClick={() => handleChange("priorite", "normal")}
-              >
-                Normal
-              </button>
-              <button
-                className={`besoins-priorite__btn besoins-priorite__btn--faible ${form.priorite === "faible" ? "active" : ""}`}
-                onClick={() => handleChange("priorite", "faible")}
-              >
-                Faible
-              </button>
+              {["urgent", "normal", "faible"].map((p) => (
+                <button
+                  key={p}
+                  className={`besoins-priorite__btn besoins-priorite__btn--${p} ${form.priorite === p ? "active" : ""}`}
+                  onClick={() => handleChange("priorite", p)}
+                >
+                  {p.charAt(0).toUpperCase() + p.slice(1)}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="field">
             <label>Date de signalement</label>
-            <input type="text" value="16 mai 2025" disabled />
+            <input
+              type="text"
+              value={new Date().toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+              disabled
+            />
           </div>
 
           <button className="besoins-submit-btn" onClick={handleSubmit}>
@@ -208,26 +220,47 @@ function BesoinsDaaraPage() {
 
         {/* Besoins existants */}
         <div className="besoins-existants">
-          <h2 className="besoins-existants__title">Besoins existants</h2>
+          <h2 className="besoins-existants__title">
+            Besoins existants ({besoins.length})
+          </h2>
           <div className="besoins-list">
-            {besoinsExistants.map((besoin) => (
-              <div key={besoin.id} className="besoin-card">
-                <div className="besoin-card__icon">{besoin.icon}</div>
-                <div className="besoin-card__content">
-                  <div className="besoin-card__header">
-                    <h3>{besoin.titre}</h3>
-                    <span className={getPrioriteBadgeClass(besoin.priorite)}>
-                      {getPrioriteLabel(besoin.priorite)}
-                    </span>
+            {besoins.length === 0 ? (
+              <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>
+                Aucun besoin signalé pour ce daara.
+              </p>
+            ) : (
+              besoins.map((besoin) => (
+                <div key={besoin.id} className="besoin-card">
+                  <div className="besoin-card__icon">
+                    {getTypeIcon(besoin.type)}
                   </div>
-                  <p className="besoin-card__description">
-                    {besoin.description}
-                  </p>
-                  <p className="besoin-card__date">{besoin.date}</p>
+                  <div className="besoin-card__content">
+                    <div className="besoin-card__header">
+                      <h3>{besoin.type}</h3>
+                      <span className={getPrioriteBadgeClass(besoin.priorite)}>
+                        {getPrioriteLabel(besoin.priorite)}
+                      </span>
+                    </div>
+                    <p className="besoin-card__description">
+                      {besoin.description}
+                    </p>
+                    <p className="besoin-card__date">
+                      {besoin.date_signalement
+                        ? new Date(besoin.date_signalement).toLocaleDateString(
+                            "fr-FR",
+                            {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            },
+                          )
+                        : "—"}
+                    </p>
+                  </div>
+                  <ChevronRight size={16} className="besoin-card__arrow" />
                 </div>
-                <ChevronRight size={16} className="besoin-card__arrow" />
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>

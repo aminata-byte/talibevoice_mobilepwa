@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, Users, FileText, CheckCircle2 } from "lucide-react";
+import { User, Users, CheckCircle2 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
@@ -16,42 +16,45 @@ function RecenserTalibePage() {
   const isEditMode = !!id;
 
   const [success, setSuccess] = useState(false);
-  const [loadingData, setLoadingData] = useState(isEditMode);
+  const [loadingData, setLoadingData] = useState(true);
+  const [daaras, setDaaras] = useState([]);
   const [form, setForm] = useState({
     nom: "",
     prenom: "",
     date_naissance: "",
     lieu_naissance: "",
-    daara: "",
+    daara_id: "",
     niveau_etude: "",
     est_majeur: false,
     a_etat_civil: false,
   });
 
   useEffect(() => {
-    if (isEditMode) {
-      fetchTalib();
-    }
-  }, [id, isEditMode]);
+    fetchInitialData();
+  }, [id]);
 
-  const fetchTalib = async () => {
+  const fetchInitialData = async () => {
     setLoadingData(true);
     try {
-      const data = await agentService.getTalibes();
-      const talib = data.find((t) => t.id === parseInt(id));
-      if (talib) {
-        setForm({
-          nom: talib.nom,
-          prenom: talib.prenom,
-          date_naissance: talib.date_naissance
-            ? talib.date_naissance.split("T")[0]
-            : "",
-          lieu_naissance: talib.lieu_naissance || "",
-          daara: talib.daara?.nom || "",
-          niveau_etude: talib.niveau_etude || "",
-          est_majeur: talib.est_majeur,
-          a_etat_civil: talib.a_etat_civil,
-        });
+      const daarasData = await agentService.getDaaras();
+      setDaaras(Array.isArray(daarasData) ? daarasData : []);
+
+      if (isEditMode) {
+        const talibe = await agentService.getTalibe(id);
+        if (talibe) {
+          setForm({
+            nom: talibe.nom || "",
+            prenom: talibe.prenom || "",
+            date_naissance: talibe.date_naissance
+              ? talibe.date_naissance.split("T")[0]
+              : "",
+            lieu_naissance: talibe.lieu_naissance || "",
+            daara_id: talibe.daara_id?.toString() || "",
+            niveau_etude: talibe.niveau_etude || "",
+            est_majeur: talibe.est_majeur || false,
+            a_etat_civil: talibe.a_etat_civil || false,
+          });
+        }
       }
     } catch (err) {
       console.error(err);
@@ -69,6 +72,10 @@ function RecenserTalibePage() {
       alert("Veuillez remplir au moins le nom et le prénom.");
       return;
     }
+    if (!isEditMode && !form.daara_id) {
+      alert("Veuillez sélectionner un daara.");
+      return;
+    }
 
     try {
       if (isEditMode) {
@@ -83,7 +90,7 @@ function RecenserTalibePage() {
         });
       } else {
         await agentService.createTalibe({
-          daara_id: 2, // temporaire — à remplacer par une vraie sélection de daara
+          daara_id: parseInt(form.daara_id),
           nom: form.nom,
           prenom: form.prenom,
           date_naissance: form.date_naissance,
@@ -139,13 +146,13 @@ function RecenserTalibePage() {
           title="Informations personnelles"
         >
           <TextField
-            label="Nom"
+            label="Nom *"
             placeholder="Entrez le nom"
             value={form.nom}
             onChange={(e) => handleChange("nom", e.target.value)}
           />
           <TextField
-            label="Prénom"
+            label="Prénom *"
             placeholder="Entrez le prénom"
             value={form.prenom}
             onChange={(e) => handleChange("prenom", e.target.value)}
@@ -165,17 +172,23 @@ function RecenserTalibePage() {
         </FormSection>
 
         <FormSection icon={<Users size={18} />} title="Situation">
-          <SelectField
-            label="Daara"
-            options={[
-              "Sélectionnez le daara",
-              "Daara Touba",
-              "Daara Médina",
-              "Daara Kolda",
-            ]}
-            value={form.daara}
-            onChange={(e) => handleChange("daara", e.target.value)}
-          />
+          {!isEditMode && (
+            <SelectField
+              label="Daara *"
+              options={["Sélectionnez le daara", ...daaras.map((d) => d.nom)]}
+              value={
+                daaras.find((d) => d.id.toString() === form.daara_id)?.nom ||
+                "Sélectionnez le daara"
+              }
+              onChange={(e) => {
+                const selected = daaras.find((d) => d.nom === e.target.value);
+                handleChange(
+                  "daara_id",
+                  selected ? selected.id.toString() : "",
+                );
+              }}
+            />
+          )}
           <SelectField
             label="Niveau d'étude"
             options={[
@@ -184,7 +197,7 @@ function RecenserTalibePage() {
               "Intermédiaire",
               "Avancé",
             ]}
-            value={form.niveau_etude}
+            value={form.niveau_etude || "Sélectionnez le niveau"}
             onChange={(e) => handleChange("niveau_etude", e.target.value)}
           />
           <ToggleField
@@ -197,14 +210,6 @@ function RecenserTalibePage() {
             value={form.a_etat_civil}
             onChange={(val) => handleChange("a_etat_civil", val)}
           />
-        </FormSection>
-
-        <FormSection icon={<FileText size={18} />} title="Documents">
-          <div className="upload-box">
-            <FileText size={32} color="var(--primary)" />
-            <p>Cliquez pour ajouter un document</p>
-            <input type="file" />
-          </div>
         </FormSection>
 
         <button className="save-btn" onClick={handleSubmit}>

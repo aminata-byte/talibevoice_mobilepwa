@@ -280,3 +280,16 @@
   background: var(--primary-light);
   color: var(--primary-dark);
 }
+
+.besoins-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
