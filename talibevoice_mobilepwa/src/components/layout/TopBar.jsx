@@ -1,11 +1,32 @@
+import { useState, useEffect } from "react";
 import { Bell, ArrowLeft } from "lucide-react";
 import { useAgentAuth } from "../../context/AgentAuthContext";
 import { useNavigate } from "react-router-dom";
+import agentService from "../../services/agentService";
 import "./TopBar.css";
 
 function TopBar({ title, showBack = false, action = null }) {
   const { agent } = useAgentAuth();
   const navigate = useNavigate();
+  const [nonLues, setNonLues] = useState(0);
+
+  useEffect(() => {
+    if (!showBack) {
+      fetchNonLues();
+    }
+  }, [showBack]);
+
+  const fetchNonLues = async () => {
+    try {
+      const data = await agentService.getNotifications();
+      const count = Array.isArray(data)
+        ? data.filter((n) => !n.est_lue).length
+        : 0;
+      setNonLues(count);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (showBack) {
     return (
@@ -34,7 +55,9 @@ function TopBar({ title, showBack = false, action = null }) {
           onClick={() => navigate("/notifications")}
         >
           <Bell size={20} />
-          <span className="topbar__notif-badge">3</span>
+          {nonLues > 0 && (
+            <span className="topbar__notif-badge">{nonLues}</span>
+          )}
         </button>
         <button className="topbar__avatar" onClick={() => navigate("/profil")}>
           {agent?.name?.charAt(0) || "A"}

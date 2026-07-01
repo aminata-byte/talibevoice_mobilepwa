@@ -1,65 +1,79 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
+import agentService from "../../services/agentService";
 import "./MissionsPage.css";
-
-const missionsData = [
-  {
-    id: 1,
-    titre: "Recensement Daara Al Nour",
-    description:
-      "Visite et recensement des nouveaux talibés inscrits pour le trimestre en cours. Vérification...",
-    dates: "16 mai 2025 - 18 mai 2025",
-    statut: "en_cours",
-  },
-  {
-    id: 2,
-    titre: "Distribution de kits hygiène",
-    description:
-      "Remise officielle des kits de protection sanitaire et sensibilisation aux gestes barrières dans la...",
-    dates: "20 mai 2025 - 22 mai 2025",
-    statut: "en_cours",
-  },
-  {
-    id: 3,
-    titre: "Médiation familiale Touba",
-    description:
-      "Suivi de deux dossiers de réinsertion familiale. Rencontre avec les tuteurs légaux et évaluation...",
-    dates: "25 mai 2025 - 27 mai 2025",
-    statut: "en_cours",
-  },
-  {
-    id: 4,
-    titre: "Recensement Daara Kolda",
-    description:
-      "Premier passage de recensement dans la zone, à planifier avec l'équipe régionale.",
-    dates: "2 juin 2025 - 4 juin 2025",
-    statut: "en_attente",
-  },
-  {
-    id: 5,
-    titre: "Visite Daara Touba Centre",
-    description:
-      "Mission de suivi terminée avec succès, rapport soumis à l'administration.",
-    dates: "1 mai 2025 - 3 mai 2025",
-    statut: "cloturee",
-  },
-];
 
 function MissionsPage() {
   const [tab, setTab] = useState("en_cours");
+  const [missions, setMissions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const missionsFiltrees = missionsData.filter((m) => m.statut === tab);
+  useEffect(() => {
+    fetchMissions();
+  }, []);
 
-  const handleCloturer = (id) => {
-    alert(`Mission #${id} clôturée avec succès.`);
+  const fetchMissions = async () => {
+    setLoading(true);
+    try {
+      const data = await agentService.getMissions();
+      setMissions(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDetails = (id) => {
-    navigate(`/missions/${id}`);
+  const handleAccepter = async (id) => {
+    try {
+      await agentService.accepterMission(id);
+      setMissions((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, statut: "en_cours" } : m)),
+      );
+    } catch (err) {
+      alert(err.response?.data?.message || "Erreur lors de l'acceptation.");
+    }
+  };
+
+  const handleCloturer = async (id) => {
+    try {
+      await agentService.cloturerMission(id);
+      setMissions((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, statut: "cloturee" } : m)),
+      );
+    } catch (err) {
+      alert(err.response?.data?.message || "Erreur lors de la clôture.");
+    }
+  };
+
+  const missionsFiltrees = missions.filter((m) => m.statut === tab);
+
+  const getBadgeClass = (statut) => {
+    if (statut === "en_cours")
+      return "mission-card__badge mission-card__badge--cours";
+    if (statut === "en_attente")
+      return "mission-card__badge mission-card__badge--attente";
+    return "mission-card__badge mission-card__badge--cloturee";
+  };
+
+  const getBadgeLabel = (statut) => {
+    if (statut === "en_cours") return "EN COURS";
+    if (statut === "en_attente") return "EN ATTENTE";
+    return "CLÔTURÉE";
+  };
+
+  const formatDates = (mission) => {
+    if (mission.date_debut && mission.date_fin) {
+      return `${new Date(mission.date_debut).toLocaleDateString("fr-FR")} - ${new Date(mission.date_fin).toLocaleDateString("fr-FR")}`;
+    }
+    if (mission.date_debut) {
+      return new Date(mission.date_debut).toLocaleDateString("fr-FR");
+    }
+    return "—";
   };
 
   return (
@@ -73,88 +87,81 @@ function MissionsPage() {
             className={`missions-tab ${tab === "en_attente" ? "active" : ""}`}
             onClick={() => setTab("en_attente")}
           >
-            En attente
+            En attente (
+            {missions.filter((m) => m.statut === "en_attente").length})
           </button>
           <button
             className={`missions-tab ${tab === "en_cours" ? "active" : ""}`}
             onClick={() => setTab("en_cours")}
           >
-            En cours
+            En cours ({missions.filter((m) => m.statut === "en_cours").length})
           </button>
           <button
             className={`missions-tab ${tab === "cloturee" ? "active" : ""}`}
             onClick={() => setTab("cloturee")}
           >
-            Clôturées
+            Clôturées ({missions.filter((m) => m.statut === "cloturee").length})
           </button>
         </div>
 
         {/* Liste missions */}
-        <div className="missions-list">
-          {missionsFiltrees.length === 0 ? (
-            <p className="missions-empty">
-              Aucune mission dans cette catégorie.
-            </p>
-          ) : (
-            missionsFiltrees.map((mission) => (
-              <div key={mission.id} className="mission-card">
-                <div className="mission-card__header">
-                  <h3 className="mission-card__titre">{mission.titre}</h3>
-                  {mission.statut === "en_cours" && (
-                    <span className="mission-card__badge mission-card__badge--cours">
-                      EN COURS
+        {loading ? (
+          <p className="missions-empty">Chargement...</p>
+        ) : (
+          <div className="missions-list">
+            {missionsFiltrees.length === 0 ? (
+              <p className="missions-empty">
+                Aucune mission dans cette catégorie.
+              </p>
+            ) : (
+              missionsFiltrees.map((mission) => (
+                <div key={mission.id} className="mission-card">
+                  <div className="mission-card__header">
+                    <h3 className="mission-card__titre">
+                      {mission.titre || mission.type || "Mission"}
+                    </h3>
+                    <span className={getBadgeClass(mission.statut)}>
+                      {getBadgeLabel(mission.statut)}
                     </span>
-                  )}
-                  {mission.statut === "en_attente" && (
-                    <span className="mission-card__badge mission-card__badge--attente">
-                      EN ATTENTE
-                    </span>
-                  )}
-                  {mission.statut === "cloturee" && (
-                    <span className="mission-card__badge mission-card__badge--cloturee">
-                      CLÔTURÉE
-                    </span>
-                  )}
-                </div>
-                <p className="mission-card__description">
-                  {mission.description}
-                </p>
-                <p className="mission-card__dates">
-                  <Calendar size={13} />
-                  {mission.dates}
-                </p>
+                  </div>
+                  <p className="mission-card__description">
+                    {mission.description || mission.objectif || "—"}
+                  </p>
+                  <p className="mission-card__dates">
+                    <Calendar size={13} />
+                    {formatDates(mission)}
+                  </p>
 
-                {/* Actions */}
-                <div className="mission-card__actions">
-                  <button
-                    className="mission-card__btn mission-card__btn--details"
-                    onClick={() => handleDetails(mission.id)}
-                  >
-                    <Eye size={15} />
-                    Détails
-                  </button>
-
-                  {mission.statut === "en_cours" && (
+                  <div className="mission-card__actions">
                     <button
-                      className="mission-card__btn mission-card__btn--cloturer"
-                      onClick={() => handleCloturer(mission.id)}
+                      className="mission-card__btn mission-card__btn--details"
+                      onClick={() => navigate(`/missions/${mission.id}`)}
                     >
-                      Clôturer
+                      <Eye size={15} />
+                      Détails
                     </button>
-                  )}
-                  {mission.statut === "en_attente" && (
-                    <button
-                      className="mission-card__btn mission-card__btn--accept"
-                      onClick={() => handleCloturer(mission.id)}
-                    >
-                      Accepter
-                    </button>
-                  )}
+                    {mission.statut === "en_cours" && (
+                      <button
+                        className="mission-card__btn mission-card__btn--cloturer"
+                        onClick={() => handleCloturer(mission.id)}
+                      >
+                        Clôturer
+                      </button>
+                    )}
+                    {mission.statut === "en_attente" && (
+                      <button
+                        className="mission-card__btn mission-card__btn--accept"
+                        onClick={() => handleAccepter(mission.id)}
+                      >
+                        Accepter
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
 
       <BottomNav />

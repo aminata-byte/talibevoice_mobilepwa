@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Calendar,
@@ -8,73 +9,49 @@ import {
 } from "lucide-react";
 import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
+import agentService from "../../services/agentService";
 import "./MissionDetailPage.css";
-
-const missionsData = [
-  {
-    id: 1,
-    titre: "Recensement Daara Al Nour",
-    description:
-      "Visite et recensement des nouveaux talibés inscrits pour le trimestre en cours. Vérification des documents d'état civil et mise à jour des fiches existantes.",
-    lieu: "Médina Gounass, Kolda",
-    dates: "16 mai 2025 - 18 mai 2025",
-    statut: "en_cours",
-    type: "Recensement",
-  },
-  {
-    id: 2,
-    titre: "Distribution de kits hygiène",
-    description:
-      "Remise officielle des kits de protection sanitaire et sensibilisation aux gestes barrières dans la zone concernée.",
-    lieu: "Bakel Centre, Bakel",
-    dates: "20 mai 2025 - 22 mai 2025",
-    statut: "en_cours",
-    type: "Distribution",
-  },
-  {
-    id: 3,
-    titre: "Médiation familiale Touba",
-    description:
-      "Suivi de deux dossiers de réinsertion familiale. Rencontre avec les tuteurs légaux et évaluation des conditions de vie.",
-    lieu: "Touba",
-    dates: "25 mai 2025 - 27 mai 2025",
-    statut: "en_cours",
-    type: "Suivi",
-  },
-  {
-    id: 4,
-    titre: "Recensement Daara Kolda",
-    description:
-      "Premier passage de recensement dans la zone, à planifier avec l'équipe régionale.",
-    lieu: "Kolda",
-    dates: "2 juin 2025 - 4 juin 2025",
-    statut: "en_attente",
-    type: "Recensement",
-  },
-  {
-    id: 5,
-    titre: "Visite Daara Touba Centre",
-    description:
-      "Mission de suivi terminée avec succès, rapport soumis à l'administration.",
-    lieu: "Touba Centre",
-    dates: "1 mai 2025 - 3 mai 2025",
-    statut: "cloturee",
-    type: "Suivi",
-  },
-];
 
 function MissionDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const mission = missionsData.find((m) => m.id === parseInt(id));
+  const [mission, setMission] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!mission) {
-    return (
-      <div className="mdetail-error">
-        <p>Mission introuvable.</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    fetchMission();
+  }, [id]);
+
+  const fetchMission = async () => {
+    setLoading(true);
+    try {
+      const data = await agentService.getMission(id);
+      setMission(data);
+    } catch (err) {
+      console.error(err);
+      setMission(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAccepter = async () => {
+    try {
+      await agentService.accepterMission(id);
+      setMission((prev) => ({ ...prev, statut: "en_cours" }));
+    } catch (err) {
+      alert(err.response?.data?.message || "Erreur lors de l'acceptation.");
+    }
+  };
+
+  const handleCloturer = async () => {
+    try {
+      await agentService.cloturerMission(id);
+      setMission((prev) => ({ ...prev, statut: "cloturee" }));
+    } catch (err) {
+      alert(err.response?.data?.message || "Erreur lors de la clôture.");
+    }
+  };
 
   const getBadgeClass = (statut) => {
     if (statut === "en_cours") return "mdetail-badge mdetail-badge--cours";
@@ -88,21 +65,53 @@ function MissionDetailPage() {
     return "CLÔTURÉE";
   };
 
-  const handleAction = () => {
-    if (mission.statut === "en_attente") {
-      alert("Mission acceptée avec succès.");
-    } else {
-      alert("Mission clôturée avec succès.");
+  const formatDates = (mission) => {
+    if (mission.date_debut && mission.date_fin) {
+      return `${new Date(mission.date_debut).toLocaleDateString("fr-FR")} - ${new Date(mission.date_fin).toLocaleDateString("fr-FR")}`;
     }
-    navigate("/missions");
+    if (mission.date_debut) {
+      return new Date(mission.date_debut).toLocaleDateString("fr-FR");
+    }
+    return "—";
   };
+
+  if (loading) {
+    return (
+      <div className="mdetail-page">
+        <TopBar title="Détail de la mission" showBack={true} />
+        <div className="mdetail-content">
+          <p
+            style={{
+              textAlign: "center",
+              color: "var(--text-secondary)",
+              padding: "2rem",
+            }}
+          >
+            Chargement...
+          </p>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  if (!mission) {
+    return (
+      <div className="mdetail-page">
+        <TopBar title="Détail de la mission" showBack={true} />
+        <div className="mdetail-error">
+          <p>Mission introuvable.</p>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="mdetail-page">
       <TopBar title="Détail de la mission" showBack={true} />
 
       <div className="mdetail-content">
-        {/* Header */}
         <div className="mdetail-header">
           <span className={getBadgeClass(mission.statut)}>
             {getBadgeLabel(mission.statut)}
@@ -110,7 +119,6 @@ function MissionDetailPage() {
           <h1 className="mdetail-titre">{mission.titre}</h1>
         </div>
 
-        {/* Infos */}
         <div className="mdetail-infos">
           <div className="mdetail-info-item">
             <Building2 size={18} />
@@ -122,31 +130,36 @@ function MissionDetailPage() {
           <div className="mdetail-info-item">
             <MapPin size={18} />
             <div>
-              <p className="mdetail-info-label">Lieu</p>
-              <p className="mdetail-info-value">{mission.lieu}</p>
+              <p className="mdetail-info-label">Daara</p>
+              <p className="mdetail-info-value">{mission.daara?.nom || "—"}</p>
             </div>
           </div>
           <div className="mdetail-info-item">
             <Calendar size={18} />
             <div>
               <p className="mdetail-info-label">Période</p>
-              <p className="mdetail-info-value">{mission.dates}</p>
+              <p className="mdetail-info-value">{formatDates(mission)}</p>
             </div>
           </div>
         </div>
 
-        {/* Description */}
-        <div className="mdetail-description">
-          <h2 className="mdetail-section-title">
-            <FileText size={16} />
-            Description
-          </h2>
-          <p>{mission.description}</p>
-        </div>
+        {mission.description && (
+          <div className="mdetail-description">
+            <h2 className="mdetail-section-title">
+              <FileText size={16} />
+              Description
+            </h2>
+            <p>{mission.description}</p>
+          </div>
+        )}
 
-        {/* Action */}
         {mission.statut !== "cloturee" && (
-          <button className="mdetail-action-btn" onClick={handleAction}>
+          <button
+            className="mdetail-action-btn"
+            onClick={
+              mission.statut === "en_attente" ? handleAccepter : handleCloturer
+            }
+          >
             <CheckCircle2 size={18} />
             {mission.statut === "en_attente"
               ? "Accepter la mission"

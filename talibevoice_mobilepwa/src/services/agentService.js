@@ -45,6 +45,11 @@ const agentService = {
     return response.data;
   },
 
+  getMission: async (id) => {
+    const response = await api.get(`/agent/missions/${id}`);
+    return response.data;
+  },
+
   // Rapports
   createRapport: async (data) => {
     const response = await api.post("/agent/rapports", data);
@@ -59,6 +64,11 @@ const agentService = {
   // Notifications
   getNotifications: async () => {
     const response = await api.get("/agent/notifications");
+    return response.data;
+  },
+
+  marquerNotificationLue: async (id) => {
+    const response = await api.post(`/agent/notifications/${id}/lue`);
     return response.data;
   },
 
