@@ -1,8 +1,8 @@
-function SelectField({ label, options, value, onChange }) {
+function SelectField({ label, options, value, onChange, ...props }) {
   return (
     <div className="field">
       <label>{label}</label>
-      <select value={value} onChange={onChange}>
+      <select value={value} onChange={onChange} {...props}>
         {options.map((option) => (
           <option key={option}>{option}</option>
         ))}

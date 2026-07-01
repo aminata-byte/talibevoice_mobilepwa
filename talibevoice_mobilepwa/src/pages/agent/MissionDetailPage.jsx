@@ -153,6 +153,26 @@ function MissionDetailPage() {
           </div>
         )}
 
+        {mission.statut === "en_cours" && (
+          <button
+            className="mdetail-action-btn"
+            style={{
+              background: "var(--surface, #f5f5f5)",
+              color: "var(--primary)",
+              border: "1px solid var(--primary)",
+              marginBottom: "12px",
+            }}
+            onClick={() =>
+              navigate(
+                `/rapports/nouveau?mission_id=${mission.id}&daara_id=${mission.daara_id}`,
+              )
+            }
+          >
+            <FileText size={18} />
+            Rédiger un rapport
+          </button>
+        )}
+
         {mission.statut !== "cloturee" && (
           <button
             className="mdetail-action-btn"

@@ -1,44 +1,117 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Save, AlertTriangle, CheckCircle2 } from "lucide-react";
 import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
-import TextField from "../../components/forms/TextField";
-import SelectField from "../../components/forms/SelectField";
+import agentService from "../../services/agentService";
 import "./RedigerRapportPage.css";
 
 function RedigerRapportPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const missionId = searchParams.get("mission_id");
+  const daaraIdParam = searchParams.get("daara_id");
+  const rapportId = searchParams.get("rapport_id");
+
   const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [daaras, setDaaras] = useState([]);
   const [form, setForm] = useState({
     titre: "",
     type: "",
-    daara: "",
+    daara_id: daaraIdParam || "",
     contenu: "",
   });
 
-  const handleChange = (field, value) => {
-    setForm({ ...form, [field]: value });
-  };
+  useEffect(() => {
+    fetchDaaras();
+    if (rapportId) fetchRapport();
+  }, []);
 
-  const handleBrouillon = () => {
-    if (!form.titre) {
-      alert("Veuillez au moins saisir un titre.");
-      return;
+  const fetchDaaras = async () => {
+    try {
+      const data = await agentService.getDaaras();
+      setDaaras(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
     }
-    alert("Brouillon enregistré avec succès.");
   };
 
-  const handleSubmit = () => {
-    if (!form.titre || !form.type || !form.daara || !form.contenu) {
+  const fetchRapport = async () => {
+    try {
+      const data = await agentService.getRapports();
+      const rapport = Array.isArray(data)
+        ? data.find((r) => r.id === parseInt(rapportId))
+        : null;
+      if (rapport) {
+        setForm({
+          titre: rapport.titre || "",
+          type: rapport.type || "",
+          daara_id: rapport.daara_id || "",
+          contenu: rapport.contenu || "",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const soumettre = async (statut) => {
+    if (
+      statut === "soumis" &&
+      (!form.titre || !form.type || !form.daara_id || !form.contenu)
+    ) {
       alert("Veuillez remplir tous les champs obligatoires.");
       return;
     }
-    setSuccess(true);
-    setTimeout(() => {
-      setSuccess(false);
-      navigate("/dashboard");
-    }, 2000);
+    if (statut === "brouillon" && !form.titre) {
+      alert("Veuillez au moins saisir un titre.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      if (rapportId) {
+        // Modifier le brouillon existant
+        await agentService.updateRapport(rapportId, {
+          titre: form.titre,
+          type: form.type,
+          daara_id: form.daara_id || null,
+          contenu: form.contenu,
+          statut: statut,
+        });
+      } else {
+        // Créer un nouveau rapport
+        await agentService.createRapport({
+          titre: form.titre,
+          type: form.type,
+          daara_id: form.daara_id || null,
+          contenu: form.contenu,
+          statut: statut,
+          mission_id: missionId || null,
+        });
+      }
+
+      if (statut === "soumis") {
+        setSuccess(true);
+        setTimeout(() => {
+          setSuccess(false);
+          navigate(missionId ? `/missions/${missionId}` : "/rapports");
+        }, 2000);
+      } else {
+        alert("Brouillon enregistré avec succès.");
+        navigate("/rapports");
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || "Erreur lors de l'enregistrement.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (success) {
@@ -56,37 +129,63 @@ function RedigerRapportPage() {
       <TopBar title="Rédiger un rapport" showBack={true} />
 
       <div className="rapport-content">
-        <TextField
-          label="Titre du rapport *"
-          placeholder="Ex : Visite et recensement du Daara Serigne..."
-          value={form.titre}
-          onChange={(e) => handleChange("titre", e.target.value)}
-        />
+        {missionId && (
+          <div className="rapport-mission-badge">
+            Rapport lié à la mission #{missionId}
+          </div>
+        )}
 
-        <SelectField
-          label="Type de rapport *"
-          options={[
-            "Sélectionner un type",
-            "Recensement",
-            "Suivi",
-            "Distribution",
-            "Autre",
-          ]}
-          value={form.type}
-          onChange={(e) => handleChange("type", e.target.value)}
-        />
+        {rapportId && (
+          <div
+            className="rapport-mission-badge"
+            style={{
+              background: "rgba(234,179,8,0.1)",
+              color: "#b45309",
+              borderColor: "#b45309",
+            }}
+          >
+            Modification d'un brouillon
+          </div>
+        )}
 
-        <SelectField
-          label="Daara concerné *"
-          options={[
-            "Sélectionner un daara",
-            "Daara Serigne Fallou",
-            "Daara Cheikh Ahmadou",
-            "Daara Mame Cheikh Ibra",
-          ]}
-          value={form.daara}
-          onChange={(e) => handleChange("daara", e.target.value)}
-        />
+        <div className="field">
+          <label>Titre du rapport *</label>
+          <input
+            type="text"
+            placeholder="Ex : Visite et recensement du Daara Serigne..."
+            value={form.titre}
+            onChange={(e) => handleChange("titre", e.target.value)}
+          />
+        </div>
+
+        <div className="field">
+          <label>Type de rapport *</label>
+          <select
+            value={form.type}
+            onChange={(e) => handleChange("type", e.target.value)}
+          >
+            <option value="">Sélectionner un type</option>
+            <option value="recensement">Recensement</option>
+            <option value="suivi">Suivi</option>
+            <option value="distribution">Distribution</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+
+        <div className="field">
+          <label>Daara concerné *</label>
+          <select
+            value={form.daara_id}
+            onChange={(e) => handleChange("daara_id", e.target.value)}
+          >
+            <option value="">Sélectionner un daara</option>
+            {daaras.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.nom}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="field">
           <label>Contenu *</label>
@@ -102,21 +201,22 @@ function RedigerRapportPage() {
           </span>
         </div>
 
-        {/* Boutons */}
         <div className="rapport-actions">
           <button
             className="rapport-btn rapport-btn--outline"
-            onClick={handleBrouillon}
+            onClick={() => soumettre("brouillon")}
+            disabled={submitting}
           >
             <Save size={18} />
             Enregistrer brouillon
           </button>
           <button
             className="rapport-btn rapport-btn--primary"
-            onClick={handleSubmit}
+            onClick={() => soumettre("soumis")}
+            disabled={submitting}
           >
             <AlertTriangle size={18} />
-            Soumettre
+            {submitting ? "Envoi..." : "Soumettre"}
           </button>
         </div>
       </div>

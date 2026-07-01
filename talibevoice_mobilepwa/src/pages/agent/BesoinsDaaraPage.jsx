@@ -40,15 +40,14 @@ function BesoinsDaaraPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const daarasData = await agentService.getDaaras();
-      const found = daarasData.find((d) => d.id === parseInt(id));
+      const [daarasData, besoinsData] = await Promise.all([
+        agentService.getDaaras(),
+        agentService.getBesoins(id),
+      ]);
+      const found = Array.isArray(daarasData)
+        ? daarasData.find((d) => d.id === parseInt(id))
+        : null;
       setDaara(found || null);
-
-      // Charger les besoins depuis l'API publique
-      const response = await fetch(
-        `http://localhost:8000/api/daaras/${id}/besoins`,
-      );
-      const besoinsData = await response.json();
       setBesoins(Array.isArray(besoinsData) ? besoinsData : []);
     } catch (err) {
       console.error(err);
@@ -62,8 +61,12 @@ function BesoinsDaaraPage() {
   };
 
   const handleSubmit = async () => {
-    if (!form.type || !form.description) {
-      alert("Veuillez remplir le type et la description.");
+    if (!form.type || form.type === "Sélectionner le type de besoin") {
+      alert("Veuillez sélectionner un type de besoin.");
+      return;
+    }
+    if (!form.description) {
+      alert("Veuillez remplir la description.");
       return;
     }
     try {
@@ -112,7 +115,6 @@ function BesoinsDaaraPage() {
       <TopBar title="Besoins du daara" showBack={true} />
 
       <div className="besoins-content">
-        {/* Card daara */}
         {loading ? (
           <p style={{ color: "var(--text-secondary)", padding: "1rem" }}>
             Chargement...
@@ -129,7 +131,8 @@ function BesoinsDaaraPage() {
               </p>
               <div className="besoins-daara-card__meta">
                 <span>
-                  <Users size={12} /> {daara.talibes_count || 0} talibés
+                  <Users size={12} />{" "}
+                  {daara.talibes_count ?? daara.nombre_talibes ?? 0} talibés
                 </span>
                 <span>
                   <User size={12} /> Responsable :{" "}
@@ -144,7 +147,6 @@ function BesoinsDaaraPage() {
           </p>
         )}
 
-        {/* Formulaire ajout */}
         <div className="besoins-form">
           <h2 className="besoins-form__title">Ajouter un besoin</h2>
 
@@ -166,7 +168,7 @@ function BesoinsDaaraPage() {
               "Vêtements",
               "Autre",
             ]}
-            value={form.type}
+            value={form.type || "Sélectionner le type de besoin"}
             onChange={(e) => handleChange("type", e.target.value)}
           />
 
@@ -218,7 +220,6 @@ function BesoinsDaaraPage() {
           </button>
         </div>
 
-        {/* Besoins existants */}
         <div className="besoins-existants">
           <h2 className="besoins-existants__title">
             Besoins existants ({besoins.length})
@@ -248,11 +249,7 @@ function BesoinsDaaraPage() {
                       {besoin.date_signalement
                         ? new Date(besoin.date_signalement).toLocaleDateString(
                             "fr-FR",
-                            {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            },
+                            { day: "numeric", month: "long", year: "numeric" },
                           )
                         : "—"}
                     </p>

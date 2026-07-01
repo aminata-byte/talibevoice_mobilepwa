@@ -108,3 +108,44 @@
     grid-template-columns: 1fr;
   }
 }
+
+.rapport-mission-badge {
+  background: rgba(20, 90, 50, 0.08);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border-left: 3px solid var(--primary);
+}
+
+.rapport-content .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rapport-content .field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.rapport-content .field input,
+.rapport-content .field select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-size: 14px;
+  outline: none;
+  background: var(--white);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  transition: border-color 0.2s;
+}
+
+.rapport-content .field input:focus,
+.rapport-content .field select:focus {
+  border-color: var(--primary);
+}

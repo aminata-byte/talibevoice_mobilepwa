@@ -1,4 +1,11 @@
-function TextField({ label, type = "text", placeholder, value, onChange }) {
+function TextField({
+  label,
+  type = "text",
+  placeholder,
+  value,
+  onChange,
+  ...props
+}) {
   return (
     <div className="field">
       <label>{label}</label>
@@ -7,6 +14,7 @@ function TextField({ label, type = "text", placeholder, value, onChange }) {
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        {...props}
       />
     </div>
   );

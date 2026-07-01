@@ -13,6 +13,10 @@ function LoginPage() {
   const { login } = useAgentAuth();
   const navigate = useNavigate();
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleLogin();
+  };
+
   const handleLogin = async () => {
     if (!email || !password) {
       setError("Veuillez remplir tous les champs.");
@@ -34,7 +38,6 @@ function LoginPage() {
 
   return (
     <div className="login">
-      {/* Header vert */}
       <div className="login__header">
         <div className="login__logo">
           <img
@@ -46,14 +49,12 @@ function LoginPage() {
         <h2 className="login__logo-text">TalibeVoice</h2>
       </div>
 
-      {/* Formulaire */}
       <div className="login__body">
         <h1 className="login__title">Bienvenue !</h1>
         <p className="login__subtitle">
           Connectez-vous pour accéder à votre espace agent de terrain.
         </p>
 
-        {/* Email */}
         <div className="login__form-group">
           <label className="login__label">Email</label>
           <div className="login__input-wrapper">
@@ -63,12 +64,12 @@ function LoginPage() {
               placeholder="Entrez votre email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="login__input"
             />
           </div>
         </div>
 
-        {/* Mot de passe */}
         <div className="login__form-group">
           <label className="login__label">Mot de passe</label>
           <div className="login__input-wrapper">
@@ -78,6 +79,7 @@ function LoginPage() {
               placeholder="Entrez votre mot de passe"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="login__input"
             />
             <button
@@ -89,21 +91,17 @@ function LoginPage() {
           </div>
         </div>
 
-        {/* Erreur */}
         {error && <p className="login__error">{error}</p>}
 
-        {/* Bouton */}
         <button className="login__btn" onClick={handleLogin} disabled={loading}>
           {loading ? "Connexion..." : "Se connecter"}
         </button>
 
-        {/* Badge sécurité */}
         <div className="login__security">
           <ShieldCheck size={16} />
           <span>Vos données sont sécurisées</span>
         </div>
 
-        {/* Mot de passe oublié */}
         <p className="login__forgot">Mot de passe oublié ?</p>
       </div>
     </div>

@@ -19,6 +19,7 @@ const couleurs = ["#1B7D4B", "#2D5F8A", "#7B4B9E", "#C0392B", "#E67E22"];
 function calculerAge(dateNaissance) {
   if (!dateNaissance) return "—";
   const naissance = new Date(dateNaissance);
+  if (isNaN(naissance.getTime())) return "—";
   const aujourdHui = new Date();
   let age = aujourdHui.getFullYear() - naissance.getFullYear();
   const moisDiff = aujourdHui.getMonth() - naissance.getMonth();
@@ -28,12 +29,15 @@ function calculerAge(dateNaissance) {
   ) {
     age--;
   }
+  if (age < 0 || age > 120) return "—";
   return age;
 }
 
 function formaterDate(dateString) {
   if (!dateString) return "Non renseignée";
-  return new Date(dateString).toLocaleDateString("fr-FR", {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "Non renseignée";
+  return date.toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -121,9 +125,9 @@ function FicheTalibePage() {
       <div className="fiche-content">
         <div className="fiche-statut">
           <span
-            className={`fiche-statut__badge fiche-statut__badge--${talib.statut}`}
+            className={`fiche-statut__badge fiche-statut__badge--${talib.statut || "inconnu"}`}
           >
-            {talib.statut?.toUpperCase()}
+            {talib.statut?.toUpperCase() || "—"}
           </span>
         </div>
 

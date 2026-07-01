@@ -81,6 +81,27 @@ const agentService = {
     const response = await api.put(`/agent/talibes/${id}`, data);
     return response.data;
   },
+
+  updateRapport: async (id, data) => {
+    const response = await api.put(`/agent/rapports/${id}`, data);
+    return response.data;
+  },
+
+  updateMe: async (data) => {
+    const response = await api.put("/auth/me", data);
+    return response.data;
+  },
+
+  getBesoins: async (daaraId) => {
+    const response = await api.get(`/daaras/${daaraId}/besoins`);
+    return response.data;
+  },
+
+  // Objectifs
+  getMesObjectifs: async () => {
+    const response = await api.get("/agent/objectifs");
+    return response.data;
+  },
 };
 
 export default agentService;

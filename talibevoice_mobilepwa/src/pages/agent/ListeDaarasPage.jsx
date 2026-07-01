@@ -87,46 +87,63 @@ function ListeDaarasPage() {
         {/* Chargement / Erreur */}
         {loading && <p className="daaras-empty">Chargement des daaras...</p>}
         {error && <p className="daaras-empty">{error}</p>}
-        {!loading && !error && daarasFiltres.length === 0 && (
-          <p className="daaras-empty">Aucun daara recensé pour le moment.</p>
+
+        {/* Vue carte */}
+        {!loading && !error && vue === "carte" && (
+          <div className="daaras-empty">
+            Vue carte non disponible pour le moment.
+          </div>
         )}
 
-        {/* Liste */}
-        <div className="daaras-list">
-          {daarasFiltres.map((daara) => (
-            <div
-              key={daara.id}
-              className="daara-card"
-              onClick={() => navigate(`/daaras/${daara.id}/besoins`)}
-            >
-              <div className="daara-card__icon">
-                <Building2 size={24} />
-              </div>
-              <div className="daara-card__content">
-                <div className="daara-card__header">
-                  <h3 className="daara-card__nom">{daara.nom}</h3>
-                  <span
-                    className={`daara-card__badge daara-card__badge--${daara.statut === "actif" ? "actif" : "inactif"}`}
+        {/* Vue liste */}
+        {!loading && !error && vue === "liste" && (
+          <>
+            {daarasFiltres.length === 0 ? (
+              <p className="daaras-empty">
+                Aucun daara recensé pour le moment.
+              </p>
+            ) : (
+              <div className="daaras-list">
+                {daarasFiltres.map((daara) => (
+                  <div
+                    key={daara.id}
+                    className="daara-card"
+                    onClick={() => navigate(`/daaras/${daara.id}/besoins`)}
                   >
-                    {daara.statut === "actif"
-                      ? "Actif"
-                      : daara.statut === "en_attente"
-                        ? "En attente"
-                        : "Inactif"}
-                  </span>
-                </div>
-                <p className="daara-card__zone">
-                  <MapPin size={12} />
-                  {daara.commune || daara.region || daara.adresse}
-                </p>
-                <p className="daara-card__talibes">
-                  <Users size={12} />
-                  {daara.talibes_count ?? daara.nombre_talibes ?? 0} talibés
-                </p>
+                    <div className="daara-card__icon">
+                      <Building2 size={24} />
+                    </div>
+                    <div className="daara-card__content">
+                      <div className="daara-card__header">
+                        <h3 className="daara-card__nom">{daara.nom}</h3>
+                        <span
+                          className={`daara-card__badge daara-card__badge--${
+                            daara.statut === "actif" ? "actif" : "inactif"
+                          }`}
+                        >
+                          {daara.statut === "actif"
+                            ? "Actif"
+                            : daara.statut === "en_attente"
+                              ? "En attente"
+                              : "Inactif"}
+                        </span>
+                      </div>
+                      <p className="daara-card__zone">
+                        <MapPin size={12} />
+                        {daara.region || daara.adresse || "—"}
+                      </p>
+                      <p className="daara-card__talibes">
+                        <Users size={12} />
+                        {daara.talibes_count ?? daara.nombre_talibes ?? 0}{" "}
+                        talibés
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          ))}
-        </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* FAB */}

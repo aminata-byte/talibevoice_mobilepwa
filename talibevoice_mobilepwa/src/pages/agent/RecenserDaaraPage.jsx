@@ -85,10 +85,13 @@ function RecenserDaaraPage() {
       await agentService.createDaara({
         nom: form.nom,
         adresse: form.adresse,
-        region: form.region || null,
-        capacite_accueil: form.capacite_accueil || 0,
+        region:
+          form.region === "Sélectionnez la région" ? null : form.region || null,
+        capacite_accueil: form.capacite_accueil
+          ? parseInt(form.capacite_accueil)
+          : null,
         nom_responsable: form.nom_responsable,
-        telephone_responsable: form.telephone_responsable,
+        telephone_responsable: form.telephone_responsable || null,
         latitude: form.latitude || null,
         longitude: form.longitude || null,
       });

@@ -46,7 +46,7 @@ export function AgentAuthProvider({ children }) {
   };
 
   const isAuthenticated = () => {
-    return !!agent && !!localStorage.getItem("agent_token");
+    return !!localStorage.getItem("agent_token");
   };
 
   return (

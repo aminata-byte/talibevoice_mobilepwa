@@ -13,6 +13,7 @@ import NotificationsPage from "./pages/agent/NotificationsPage";
 import { useAgentAuth } from "./context/AgentAuthContext";
 import ProfilAgentPage from "./pages/agent/ProfilAgentPage";
 import MissionDetailPage from "./pages/agent/MissionDetailPage";
+import RapportsPage from "./pages/agent/RapportsPage";
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAgentAuth();
@@ -154,6 +155,15 @@ function App() {
           element={
             <ProtectedRoute>
               <MissionDetailPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/rapports"
+          element={
+            <ProtectedRoute>
+              <RapportsPage />
             </ProtectedRoute>
           }
         />

@@ -17,6 +17,7 @@ const couleurs = ["#1B7D4B", "#2D5F8A", "#7B4B9E", "#C0392B", "#E67E22"];
 function calculerAge(dateNaissance) {
   if (!dateNaissance) return "—";
   const naissance = new Date(dateNaissance);
+  if (isNaN(naissance.getTime())) return "—";
   const aujourdHui = new Date();
   let age = aujourdHui.getFullYear() - naissance.getFullYear();
   const moisDiff = aujourdHui.getMonth() - naissance.getMonth();
@@ -26,6 +27,7 @@ function calculerAge(dateNaissance) {
   ) {
     age--;
   }
+  if (age < 0 || age > 120) return "—";
   return age;
 }
 

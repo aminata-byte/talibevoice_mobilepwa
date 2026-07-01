@@ -10,6 +10,8 @@ import ToggleField from "../../components/forms/ToggleField";
 import agentService from "../../services/agentService";
 import "./RecenserTalibePage.css";
 
+const TODAY = new Date().toISOString().split("T")[0];
+
 function RecenserTalibePage() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -67,6 +69,11 @@ function RecenserTalibePage() {
     setForm({ ...form, [field]: value });
   };
 
+  const getNiveauValue = (niveau) => {
+    if (!niveau || niveau === "Sélectionnez le niveau") return null;
+    return niveau;
+  };
+
   const handleSubmit = async () => {
     if (!form.nom || !form.prenom) {
       alert("Veuillez remplir au moins le nom et le prénom.");
@@ -76,15 +83,19 @@ function RecenserTalibePage() {
       alert("Veuillez sélectionner un daara.");
       return;
     }
+    if (form.date_naissance && form.date_naissance > TODAY) {
+      alert("La date de naissance ne peut pas être dans le futur.");
+      return;
+    }
 
     try {
       if (isEditMode) {
         await agentService.updateTalibe(id, {
           nom: form.nom,
           prenom: form.prenom,
-          date_naissance: form.date_naissance,
-          lieu_naissance: form.lieu_naissance,
-          niveau_etude: form.niveau_etude,
+          date_naissance: form.date_naissance || null,
+          lieu_naissance: form.lieu_naissance || null,
+          niveau_etude: getNiveauValue(form.niveau_etude),
           est_majeur: form.est_majeur,
           a_etat_civil: form.a_etat_civil,
         });
@@ -93,9 +104,9 @@ function RecenserTalibePage() {
           daara_id: parseInt(form.daara_id),
           nom: form.nom,
           prenom: form.prenom,
-          date_naissance: form.date_naissance,
-          lieu_naissance: form.lieu_naissance,
-          niveau_etude: form.niveau_etude,
+          date_naissance: form.date_naissance || null,
+          lieu_naissance: form.lieu_naissance || null,
+          niveau_etude: getNiveauValue(form.niveau_etude),
           est_majeur: form.est_majeur,
           a_etat_civil: form.a_etat_civil,
         });
@@ -161,6 +172,7 @@ function RecenserTalibePage() {
             label="Date de naissance"
             type="date"
             value={form.date_naissance}
+            max={TODAY}
             onChange={(e) => handleChange("date_naissance", e.target.value)}
           />
           <TextField
