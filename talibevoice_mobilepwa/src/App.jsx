@@ -14,6 +14,7 @@ import { useAgentAuth } from "./context/AgentAuthContext";
 import ProfilAgentPage from "./pages/agent/ProfilAgentPage";
 import MissionDetailPage from "./pages/agent/MissionDetailPage";
 import RapportsPage from "./pages/agent/RapportsPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAgentAuth();
@@ -167,6 +168,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -102,7 +102,13 @@ function LoginPage() {
           <span>Vos données sont sécurisées</span>
         </div>
 
-        <p className="login__forgot">Mot de passe oublié ?</p>
+        <p
+          className="login__forgot"
+          onClick={() => navigate("/forgot-password")}
+          style={{ cursor: "pointer" }}
+        >
+          Mot de passe oublié ?
+        </p>
       </div>
     </div>
   );
