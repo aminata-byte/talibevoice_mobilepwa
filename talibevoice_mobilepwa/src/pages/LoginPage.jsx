@@ -41,7 +41,7 @@ function LoginPage() {
       <div className="login__header">
         <div className="login__logo">
           <img
-            src="/src/assets/logo.jpg"
+            src="/logo.jpg"
             alt="TalibeVoice"
             className="login__logo-img"
           />

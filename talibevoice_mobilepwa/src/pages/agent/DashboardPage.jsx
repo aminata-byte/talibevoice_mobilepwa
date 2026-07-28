@@ -8,10 +8,12 @@ import StatsCard from "../../components/dashboard/StatsCard";
 import MissionCard from "../../components/dashboard/MissionCard";
 import ObjectiveCard from "../../components/dashboard/ObjectiveCard";
 import agentService from "../../services/agentService";
+import { useAgentAuth } from "../../context/AgentAuthContext";
 import "./DashboardPage.css";
 
 function DashboardPage() {
   const navigate = useNavigate();
+  const { agent } = useAgentAuth();
   const [talibes, setTalibes] = useState([]);
   const [daaras, setDaaras] = useState([]);
   const [rapports, setRapports] = useState([]);
@@ -51,6 +53,8 @@ function DashboardPage() {
     }
   };
 
+  const mesDaaras = daaras.filter((d) => d.agent_id === agent?.id);
+
   const missionsActives = missions.filter(
     (m) => m.statut === "en_cours" || m.statut === "en_attente",
   );
@@ -74,7 +78,7 @@ function DashboardPage() {
 
   const getValeurReelle = (type) => {
     if (type === "talibes") return talibes.length;
-    if (type === "daaras") return daaras.length;
+    if (type === "daaras") return mesDaaras.length;
     if (type === "rapports") return rapportsSoumis;
     return 0;
   };
@@ -111,7 +115,7 @@ function DashboardPage() {
             <StatsCard
               icon={<Building2 size={20} />}
               title="Daaras recensés"
-              value={loading ? "..." : daaras.length.toString()}
+              value={loading ? "..." : mesDaaras.length.toString()}
               evolution="Total recensés"
             />
             <StatsCard
