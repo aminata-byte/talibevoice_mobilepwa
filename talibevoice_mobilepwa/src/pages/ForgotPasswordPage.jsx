@@ -41,7 +41,8 @@ function ForgotPasswordPage() {
       setEtape(2);
     } catch (err) {
       setError(
-        err.response?.data?.message || "Aucun agent trouvé avec cet email.",
+        err.response?.data?.message ||
+          "Erreur de connexion. Veuillez réessayer.",
       );
     } finally {
       setLoading(false);
