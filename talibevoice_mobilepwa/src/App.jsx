@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import DashboardPage from "./pages/agent/DashboardPage";
 import MissionsPage from "./pages/agent/MissionsPage";
 import RecenserTalibePage from "./pages/agent/RecenserTalibePage";
@@ -48,6 +49,10 @@ function App() {
       <Routes>
         {/* Login */}
         <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/mot-de-passe-oublie"
+          element={<ForgotPasswordPage />}
+        />
         <Route path="/" element={<Navigate to="/login" replace />} />
 
         {/* Pages protégées */}

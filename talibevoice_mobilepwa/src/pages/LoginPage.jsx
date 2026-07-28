@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { useAgentAuth } from "../context/AgentAuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./LoginPage.css";
 
 function LoginPage() {
@@ -102,7 +102,9 @@ function LoginPage() {
           <span>Vos données sont sécurisées</span>
         </div>
 
-        <p className="login__forgot">Mot de passe oublié ?</p>
+        <Link to="/mot-de-passe-oublie" className="login__forgot">
+          Mot de passe oublié ?
+        </Link>
       </div>
     </div>
   );

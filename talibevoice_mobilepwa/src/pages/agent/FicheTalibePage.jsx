@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Calendar,
@@ -8,11 +8,17 @@ import {
   GraduationCap,
   Pencil,
   Building2,
+  FileText,
+  Upload,
 } from "lucide-react";
 import TopBar from "../../components/layout/TopBar";
 import BottomNav from "../../components/layout/BottomNav";
 import agentService from "../../services/agentService";
 import "./FicheTalibePage.css";
+
+const API_ORIGIN = (
+  import.meta.env.VITE_API_URL || "http://localhost:8000/api"
+).replace(/\/api\/?$/, "");
 
 const couleurs = ["#1B7D4B", "#2D5F8A", "#7B4B9E", "#C0392B", "#E67E22"];
 
@@ -54,10 +60,31 @@ function FicheTalibePage() {
   const [talib, setTalib] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchTalib();
   }, [id]);
+
+  const handleFileSelected = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const res = await agentService.uploadDocument(id, file);
+      setTalib(res.talibe);
+    } catch (err) {
+      setUploadError(
+        err.response?.data?.message || "Erreur lors de l'envoi du document.",
+      );
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
 
   const fetchTalib = async () => {
     setLoading(true);
@@ -176,6 +203,50 @@ function FicheTalibePage() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="fiche-document">
+          <div className="fiche-document__header">
+            <FileText size={18} color="var(--primary)" />
+            <span>Document</span>
+          </div>
+
+          {talib.document_path ? (
+            <a
+              href={`${API_ORIGIN}/storage/${talib.document_path}`}
+              target="_blank"
+              rel="noreferrer"
+              className="fiche-document__view-link"
+            >
+              Voir le document
+            </a>
+          ) : (
+            <p className="fiche-document__empty">Aucun document ajouté.</p>
+          )}
+
+          {uploadError && (
+            <p className="fiche-document__error">{uploadError}</p>
+          )}
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={handleFileSelected}
+            style={{ display: "none" }}
+          />
+          <button
+            className="fiche-document__upload-btn"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            <Upload size={16} />
+            {uploading
+              ? "Envoi..."
+              : talib.document_path
+                ? "Remplacer le document"
+                : "Ajouter un document"}
+          </button>
         </div>
       </div>
 
