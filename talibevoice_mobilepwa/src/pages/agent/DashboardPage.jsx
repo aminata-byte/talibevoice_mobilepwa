@@ -107,12 +107,14 @@ function DashboardPage() {
           <h2 className="dash__section-title">Mes statistiques</h2>
           <div className="dash__stats-grid">
             <StatsCard
+              variant="green"
               icon={<Users size={20} />}
               title="Talibés recensés"
               value={loading ? "..." : talibes.length.toString()}
               evolution="Total recensés"
             />
             <StatsCard
+              variant="yellow"
               icon={<Building2 size={20} />}
               title="Daaras recensés"
               value={loading ? "..." : mesDaaras.length.toString()}
@@ -125,6 +127,7 @@ function DashboardPage() {
               evolution="Soumis et validés"
             />
             <StatsCard
+              variant="light-green"
               icon={<MapPin size={20} />}
               title="Missions actives"
               value={loading ? "..." : missionsActives.length.toString()}

@@ -51,3 +51,58 @@
   font-size: 12px;
   font-weight: 600;
 }
+
+/* Variante verte pleine */
+.stats-card--green {
+  background: var(--primary);
+}
+
+.stats-card--green .stats-card__icon {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--white);
+}
+
+.stats-card--green .stats-card__title {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.stats-card--green .stats-card__value {
+  color: var(--white);
+}
+
+.stats-card--green .stats-card__evolution {
+  color: var(--white);
+}
+
+/* Variante jaune */
+.stats-card--yellow {
+  background: var(--accent);
+}
+
+.stats-card--yellow .stats-card__icon {
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--primary-dark);
+}
+
+.stats-card--yellow .stats-card__title {
+  color: var(--primary-dark);
+  opacity: 0.75;
+}
+
+.stats-card--yellow .stats-card__value {
+  color: var(--primary-dark);
+}
+
+.stats-card--yellow .stats-card__evolution {
+  color: var(--primary-dark);
+}
+
+/* Variante vert clair */
+.stats-card--light-green {
+  background: var(--primary-light);
+}
+
+.stats-card--light-green .stats-card__icon {
+  background: var(--white);
+  color: var(--primary);
+}

@@ -1,6 +1,6 @@
 .dash {
   min-height: 100vh;
-  background: var(--background);
+  background: var(--white);
   display: flex;
   flex-direction: column;
 }
@@ -42,10 +42,6 @@
 }
 
 @media (max-width: 400px) {
-  .dash__stats-grid {
-    grid-template-columns: 1fr;
-  }
-
   .dash__content {
     padding: 0.75rem;
     padding-bottom: 6rem;

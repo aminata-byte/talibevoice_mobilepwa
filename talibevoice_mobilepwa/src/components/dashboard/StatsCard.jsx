@@ -1,9 +1,9 @@
 import { TrendingUp } from "lucide-react";
 import "./StatsCard.css";
 
-function StatsCard({ icon, title, value, evolution }) {
+function StatsCard({ icon, title, value, evolution, variant }) {
   return (
-    <div className="stats-card">
+    <div className={`stats-card${variant ? ` stats-card--${variant}` : ""}`}>
       <div className="stats-card__icon">{icon}</div>
 
       <p className="stats-card__title">{title}</p>
