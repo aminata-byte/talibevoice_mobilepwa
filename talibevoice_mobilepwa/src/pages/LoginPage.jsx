@@ -42,11 +42,11 @@ function LoginPage() {
         <div className="login__logo">
           <img
             src="/logo.jpg"
-            alt="TalibeVoice"
+            alt="Sunu Daara"
             className="login__logo-img"
           />
         </div>
-        <h2 className="login__logo-text">TalibeVoice</h2>
+        <h2 className="login__logo-text">Sunu Daara</h2>
       </div>
 
       <div className="login__body">
